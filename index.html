@@ -29,7 +29,7 @@
 
     <div class="relative z-10">
       
-      <!-- Encabezado con Logo y Botón de Recetas Guardadas -->
+      <!-- Encabezado -->
       <div class="flex flex-col sm:flex-row justify-between items-center border-b border-slate-700 pb-4 mb-6 gap-4">
         <div class="flex items-center space-x-4">
           <img src="https://raw.githubusercontent.com/softborbt/softborbt-clientes/refs/heads/main/logo-loormedic.png" 
@@ -40,9 +40,12 @@
             <p class="text-xs text-slate-400 font-medium">Receta Médica Homologada - AM 00031-2020</p>
           </div>
         </div>
-        <div class="text-right no-print">
-          <button type="button" onclick="cargarHistorialRecetas()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow transition flex items-center space-x-2">
-            <span>📋 Ver Recetas Guardadas</span>
+        <div class="text-right no-print flex gap-2">
+          <button type="button" onclick="limpiarFormulario()" class="bg-rose-700 hover:bg-rose-800 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition flex items-center space-x-1">
+            <span>🧹 Limpiar Formulario</span>
+          </button>
+          <button type="button" onclick="cargarHistorialRecetas()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition flex items-center space-x-1">
+            <span>📋 Ver Recetas</span>
           </button>
         </div>
       </div>
@@ -58,19 +61,19 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
             <div class="md:col-span-2">
               <label class="block text-xs font-medium text-slate-400">Nombres y Apellidos Completos</label>
-              <input type="text" id="pacienteNombre" value="john borbor" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
+              <input type="text" id="pacienteNombre" placeholder="Ej: MOROCHO YAMBAY" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-400">Cédula / Pasaporte</label>
-              <input type="text" id="pacienteCedula" value="2400249096" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
+              <input type="text" id="pacienteCedula" placeholder="Ej: 0925062639" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-400">Edad</label>
-              <input type="number" id="pacienteEdad" value="37" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
+              <input type="number" id="pacienteEdad" placeholder="Ej: 37" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-400">Código CIE-10 / CIE-11</label>
-              <input type="text" id="cieCodigo" value="E78.2 / E11.9" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
+              <input type="text" id="cieCodigo" placeholder="Ej: E78.2 / E11.9" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-400">Tipo de Diagnóstico</label>
@@ -88,14 +91,11 @@
           <div class="space-y-3">
             <div>
               <label class="block text-xs font-medium text-slate-400">Medicamentos y Dosis</label>
-              <textarea id="prescripcionRx" rows="3" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white font-mono text-xs focus:outline-none focus:border-blue-500" required>1. GEMFIBROZILO 600 MG TABLETAS (CANTIDAD: 60)
-2. METFORMINA 500 MG TABLETAS (CANTIDAD: 90)</textarea>
+              <textarea id="prescripcionRx" rows="3" placeholder="Detalle de medicamentos y cantidades..." class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white font-mono text-xs focus:outline-none focus:border-blue-500" required></textarea>
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-400">Indicaciones de Uso / Posología</label>
-              <textarea id="indicacionesRx" rows="3" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white text-xs focus:outline-none focus:border-blue-500" required>- GEMFIBROZILO: TOMAR 1 TABLETA CADA 12 HORAS POR 1 MES.
-- METFORMINA: 1 TABLETA DESPUÉS DEL ALMUERZO POR 3 MESES.
-- TOMAR 3.5 LITROS DE AGUA DIARIAMENTE DURANTE EL TRATAMIENTO.</textarea>
+              <textarea id="indicacionesRx" rows="3" placeholder="Instrucciones del tratamiento..." class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white text-xs focus:outline-none focus:border-blue-500" required></textarea>
             </div>
           </div>
         </div>
@@ -130,7 +130,7 @@
                 💾 Guardar en Google Drive & Sheet
               </button>
               <button type="button" onclick="window.print()" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-4 rounded text-xs shadow transition">
-                🖨️ Imprimir / Guardar PDF Local
+                🖨️ Imprimir Local
               </button>
             </div>
             <p id="statusMsg" class="text-xs font-medium text-slate-400"></p>
@@ -215,6 +215,18 @@
       document.getElementById('txtEsp').innerText = especialidad;
       document.getElementById('txtFecha').innerText = "REG/CED: " + cedula + " | " + fecha;
       document.getElementById('firmaTexto').classList.remove('hidden');
+    }
+
+    function limpiarFormulario() {
+      document.getElementById('pacienteNombre').value = '';
+      document.getElementById('pacienteCedula').value = '';
+      document.getElementById('pacienteEdad').value = '';
+      document.getElementById('cieCodigo').value = '';
+      document.getElementById('prescripcionRx').value = '';
+      document.getElementById('indicacionesRx').value = '';
+      document.getElementById('qrContainer').innerHTML = '<span class="text-[10px] text-slate-500 text-center">Presione \'Generar Firma\'</span>';
+      document.getElementById('firmaTexto').classList.add('hidden');
+      document.getElementById('statusMsg').innerText = '';
     }
 
     function enviarReceta(event) {
