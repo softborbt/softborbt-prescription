@@ -13,67 +13,137 @@
       background-position: center;
       background-size: 380px auto;
     }
+
+    /* ESTILOS DE IMPRESIÓN LOCAL EXACTA A 1 PÁGINA */
     @media print {
-      .no-print { display: none !important; }
-      body { background: #fff !important; padding: 0 !important; }
-      .print-shadow-none { box-shadow: none !important; border: none !important; }
+      @page {
+        size: A4 portrait;
+        margin: 10mm 15mm 10mm 15mm;
+      }
+      
+      body {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        font-size: 11pt !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .no-print, .no-print * {
+        display: none !important;
+      }
+
+      .main-card {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+
+      .watermark {
+        opacity: 0.08 !important;
+        background-size: 400px auto !important;
+      }
+
+      .section-block {
+        background-color: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        padding: 8px 12px !important;
+        margin-bottom: 10px !important;
+        border-radius: 4px !important;
+        break-inside: avoid;
+      }
+
+      .section-title {
+        color: #0f172a !important;
+        border-bottom: 1px solid #cbd5e1 !important;
+        font-size: 9pt !important;
+      }
+
+      /* Reemplazar inputs por apariencia plana en impresion */
+      input, select, textarea {
+        background: transparent !important;
+        border: none !important;
+        color: #0f172a !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        resize: none !important;
+        font-size: 10pt !important;
+      }
+
+      textarea {
+        background-color: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        padding: 4px !important;
+      }
+
+      .header-title {
+        color: #1e3a8a !important;
+      }
+
+      .text-slate-400, .text-slate-300 {
+        color: #334155 !important;
+      }
     }
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen p-2 md:p-6">
   
-  <div class="max-w-4xl mx-auto bg-slate-800 shadow-2xl rounded-xl p-6 md:p-8 border border-slate-700 relative overflow-hidden print-shadow-none">
+  <div class="main-card max-w-4xl mx-auto bg-slate-800 shadow-2xl rounded-xl p-6 md:p-8 border border-slate-700 relative overflow-hidden">
     
-    <!-- Marca de agua de fondo -->
+    <!-- Marca de agua -->
     <div class="absolute inset-0 watermark opacity-5 pointer-events-none z-0"></div>
 
     <div class="relative z-10">
       
       <!-- Encabezado -->
-      <div class="flex flex-col sm:flex-row justify-between items-center border-b border-slate-700 pb-4 mb-6 gap-4">
+      <div class="flex flex-col sm:flex-row justify-between items-center border-b border-slate-700 pb-4 mb-5 gap-4">
         <div class="flex items-center space-x-4">
           <img src="https://raw.githubusercontent.com/softborbt/softborbt-clientes/refs/heads/main/logo-loormedic.png" 
                alt="Consultora Loormedic Logo" 
                class="h-14 w-auto object-contain bg-white/10 p-1 rounded">
           <div>
-            <h1 class="text-xl md:text-2xl font-bold text-white leading-tight">CONSULTORA LOORMEDIC S.A.</h1>
-            <p class="text-xs text-slate-400 font-medium">Receta Médica Homologada - AM 00031-2020</p>
+            <h1 class="header-title text-xl md:text-2xl font-bold text-white leading-tight">CONSULTORA LOORMEDIC S.A.</h1>
+            <p class="text-xs text-slate-400 font-medium">Receta Médica Digital — AM 00031-2020</p>
           </div>
         </div>
         <div class="text-right no-print flex gap-2">
-          <button type="button" onclick="limpiarFormulario()" class="bg-rose-700 hover:bg-rose-800 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition flex items-center space-x-1">
-            <span>🧹 Limpiar Formulario</span>
+          <button type="button" onclick="limpiarFormulario()" class="bg-rose-700 hover:bg-rose-800 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition">
+            🧹 Limpiar
           </button>
-          <button type="button" onclick="cargarHistorialRecetas()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition flex items-center space-x-1">
-            <span>📋 Ver Recetas</span>
+          <button type="button" onclick="cargarHistorialRecetas()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition">
+            📋 Ver Recetas
           </button>
         </div>
       </div>
 
-      <form id="recetaForm" onsubmit="enviarReceta(event)" class="space-y-6">
+      <form id="recetaForm" onsubmit="enviarReceta(event)" class="space-y-4">
         
         <!-- Sección 1: Datos del Paciente -->
-        <div class="bg-slate-900/60 p-4 rounded-lg border border-slate-700">
-          <h2 class="font-semibold text-slate-200 text-sm mb-3 border-b border-slate-700 pb-1 flex items-center justify-between">
+        <div class="section-block bg-slate-900/60 p-4 rounded-lg border border-slate-700">
+          <h2 class="section-title font-semibold text-slate-200 text-sm mb-2 border-b border-slate-700 pb-1 flex items-center justify-between">
             <span>1. DATOS DEL PACIENTE</span>
-            <span class="text-xs font-normal text-slate-400">Norma MSP Ecuador</span>
+            <span class="text-xs font-normal text-slate-400 no-print">Norma MSP Ecuador</span>
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
             <div class="md:col-span-2">
               <label class="block text-xs font-medium text-slate-400">Nombres y Apellidos Completos</label>
-              <input type="text" id="pacienteNombre" placeholder="Ej: MOROCHO YAMBAY" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
+              <input type="text" id="pacienteNombre" placeholder="Ej: JOHN BORBOR" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-400">Cédula / Pasaporte</label>
-              <input type="text" id="pacienteCedula" placeholder="Ej: 0925062639" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
+              <input type="text" id="pacienteCedula" placeholder="Ej: 2400249096" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-400">Edad</label>
-              <input type="number" id="pacienteEdad" placeholder="Ej: 37" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
+              <input type="number" id="pacienteEdad" placeholder="Ej: 28" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-400">Código CIE-10 / CIE-11</label>
-              <input type="text" id="cieCodigo" placeholder="Ej: E78.2 / E11.9" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
+              <input type="text" id="cieCodigo" placeholder="Ej: E78.2" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-400">Tipo de Diagnóstico</label>
@@ -86,23 +156,23 @@
         </div>
 
         <!-- Sección 2: Prescripción Médica -->
-        <div class="bg-slate-900/60 p-4 rounded-lg border border-slate-700">
-          <h2 class="font-semibold text-slate-200 text-sm mb-3 border-b border-slate-700 pb-1">2. PRESCRIPCIÓN MÉDICA (Rx) E INDICACIONES</h2>
+        <div class="section-block bg-slate-900/60 p-4 rounded-lg border border-slate-700">
+          <h2 class="section-title font-semibold text-slate-200 text-sm mb-2 border-b border-slate-700 pb-1">2. PRESCRIPCIÓN MÉDICA (Rx) E INDICACIONES</h2>
           <div class="space-y-3">
             <div>
               <label class="block text-xs font-medium text-slate-400">Medicamentos y Dosis</label>
-              <textarea id="prescripcionRx" rows="3" placeholder="Detalle de medicamentos y cantidades..." class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white font-mono text-xs focus:outline-none focus:border-blue-500" required></textarea>
+              <textarea id="prescripcionRx" rows="2" placeholder="Detalle medicamentos..." class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white font-mono text-xs focus:outline-none focus:border-blue-500" required></textarea>
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-400">Indicaciones de Uso / Posología</label>
-              <textarea id="indicacionesRx" rows="3" placeholder="Instrucciones del tratamiento..." class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white text-xs focus:outline-none focus:border-blue-500" required></textarea>
+              <textarea id="indicacionesRx" rows="2" placeholder="Indicaciones del tratamiento..." class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white text-xs focus:outline-none focus:border-blue-500" required></textarea>
             </div>
           </div>
         </div>
 
         <!-- Sección 3: Datos del Especialista -->
-        <div class="bg-slate-900/60 p-4 rounded-lg border border-slate-700">
-          <h2 class="font-semibold text-slate-200 text-sm mb-3 border-b border-slate-700 pb-1">3. DATOS DEL ESPECIALISTA PRESCRIPTOR</h2>
+        <div class="section-block bg-slate-900/60 p-4 rounded-lg border border-slate-700">
+          <h2 class="section-title font-semibold text-slate-200 text-sm mb-2 border-b border-slate-700 pb-1">3. DATOS DEL ESPECIALISTA PRESCRIPTOR</h2>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
             <div>
               <label class="block text-xs font-medium text-slate-400">Nombre del Médico</label>
@@ -119,27 +189,27 @@
           </div>
         </div>
 
-        <!-- Botones y Firma -->
-        <div class="flex flex-col md:flex-row items-center justify-between bg-slate-900/80 p-4 rounded-lg border border-slate-700 gap-4">
+        <!-- Botones y Bloque de Firma -->
+        <div class="section-block flex flex-col md:flex-row items-center justify-between bg-slate-900/80 p-4 rounded-lg border border-slate-700 gap-4">
           <div class="no-print space-y-2 w-full md:w-auto">
             <div class="flex flex-wrap gap-2">
-              <button type="button" onclick="generarFirmaQR()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded text-xs shadow transition">
+              <button type="button" onclick="generarFirmaQR()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded text-xs shadow transition">
                 🖋️ Generar Firma QR
               </button>
-              <button type="submit" id="btnGuardar" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded text-xs shadow transition">
-                💾 Guardar en Google Drive & Sheet
+              <button type="submit" id="btnGuardar" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-3 rounded text-xs shadow transition">
+                💾 Guardar en Drive & Sheet
               </button>
-              <button type="button" onclick="window.print()" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-4 rounded text-xs shadow transition">
+              <button type="button" onclick="imprimirLocal()" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-3 rounded text-xs shadow transition">
                 🖨️ Imprimir Local
               </button>
             </div>
             <p id="statusMsg" class="text-xs font-medium text-slate-400"></p>
           </div>
 
-          <!-- Bloque de Firma y QR -->
+          <!-- Firma Digital y QR -->
           <div class="flex items-center space-x-4">
-            <div id="qrContainer" class="p-1 bg-white border border-slate-700 rounded shadow-sm min-w-[100px] min-h-[100px] flex items-center justify-center">
-              <span class="text-[10px] text-slate-500 text-center">Presione 'Generar Firma'</span>
+            <div id="qrContainer" class="p-1 bg-white border border-slate-700 rounded shadow-sm w-[95px] h-[95px] flex items-center justify-center">
+              <span class="text-[9px] text-slate-500 text-center no-print">Presione 'Generar Firma'</span>
             </div>
             <div id="firmaTexto" class="text-xs text-slate-300 font-mono hidden border-l pl-3 border-slate-700">
               <p class="font-bold border-b border-slate-700 pb-0.5 text-blue-400">FIRMADO DIGITALMENTE</p>
@@ -152,7 +222,7 @@
 
       </form>
 
-      <!-- Modal de Recetas Guardadas -->
+      <!-- Modal Recetas -->
       <div id="modalHistorial" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
         <div class="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-3xl max-h-[80vh] flex flex-col p-6 shadow-2xl">
           <div class="flex justify-between items-center border-b border-slate-700 pb-3 mb-4">
@@ -167,7 +237,7 @@
                   <th class="p-2">Paciente</th>
                   <th class="p-2">Cédula</th>
                   <th class="p-2">CIE-10</th>
-                  <th class="p-2 text-center">PDF</th>
+                  <th class="p-2 text-center">PDF Drive</th>
                 </tr>
               </thead>
               <tbody id="tablaRecetas" class="divide-y divide-slate-700">
@@ -204,8 +274,8 @@
 
       new QRCode(qrContainer, {
         text: payloadQR,
-        width: 100,
-        height: 100,
+        width: 90,
+        height: 90,
         colorDark : "#0f172a",
         colorLight : "#ffffff",
         correctLevel : QRCode.CorrectLevel.M
@@ -217,6 +287,17 @@
       document.getElementById('firmaTexto').classList.remove('hidden');
     }
 
+    function imprimirLocal() {
+      // Si no ha generado el QR, lo genera antes de imprimir
+      const qrImg = document.querySelector('#qrContainer img');
+      if (!qrImg) {
+        generarFirmaQR();
+      }
+      setTimeout(() => {
+        window.print();
+      }, 200);
+    }
+
     function limpiarFormulario() {
       document.getElementById('pacienteNombre').value = '';
       document.getElementById('pacienteCedula').value = '';
@@ -224,18 +305,30 @@
       document.getElementById('cieCodigo').value = '';
       document.getElementById('prescripcionRx').value = '';
       document.getElementById('indicacionesRx').value = '';
-      document.getElementById('qrContainer').innerHTML = '<span class="text-[10px] text-slate-500 text-center">Presione \'Generar Firma\'</span>';
+      document.getElementById('qrContainer').innerHTML = '<span class="text-[9px] text-slate-500 text-center no-print">Presione \'Generar Firma\'</span>';
       document.getElementById('firmaTexto').classList.add('hidden');
       document.getElementById('statusMsg').innerText = '';
     }
 
     function enviarReceta(event) {
       event.preventDefault();
+
+      // Asegurar generación de QR antes de enviar
+      let qrCanvasOrImg = document.querySelector('#qrContainer img') || document.querySelector('#qrContainer canvas');
+      if (!qrCanvasOrImg) {
+        generarFirmaQR();
+        qrCanvasOrImg = document.querySelector('#qrContainer img') || document.querySelector('#qrContainer canvas');
+      }
+
+      let qrDataBase64 = "";
+      if (qrCanvasOrImg) {
+        qrDataBase64 = qrCanvasOrImg.tagName === 'IMG' ? qrCanvasOrImg.src : qrCanvasOrImg.toDataURL("image/png");
+      }
       
       const statusMsg = document.getElementById('statusMsg');
       const btnGuardar = document.getElementById('btnGuardar');
       
-      statusMsg.innerText = "⏳ Generando PDF y guardando en Google Drive...";
+      statusMsg.innerText = "⏳ Generando PDF en Drive con QR y marcas oficiales...";
       statusMsg.className = "text-xs font-medium text-amber-400";
       btnGuardar.disabled = true;
 
@@ -249,7 +342,8 @@
         indicaciones: document.getElementById('indicacionesRx').value,
         medicoNombre: document.getElementById('medicoNombre').value,
         medicoEspecialidad: document.getElementById('medicoEspecialidad').value,
-        medicoCedula: document.getElementById('medicoCedula').value
+        medicoCedula: document.getElementById('medicoCedula').value,
+        qrImageData: qrDataBase64
       };
 
       fetch(GAS_WEBAPP_URL, {
@@ -259,12 +353,12 @@
         body: JSON.stringify(payload)
       })
       .then(() => {
-        statusMsg.innerText = "✅ ¡Receta registrada y PDF guardado en Drive con éxito!";
+        statusMsg.innerText = "✅ ¡Receta y PDF guardados en Drive con éxito!";
         statusMsg.className = "text-xs font-medium text-emerald-400";
         btnGuardar.disabled = false;
       })
       .catch(err => {
-        statusMsg.innerText = "❌ Error de conexión al guardar.";
+        statusMsg.innerText = "❌ Error de comunicación con Google Drive.";
         statusMsg.className = "text-xs font-medium text-red-400";
         btnGuardar.disabled = false;
       });
@@ -274,13 +368,13 @@
       const modal = document.getElementById('modalHistorial');
       const tabla = document.getElementById('tablaRecetas');
       modal.classList.remove('hidden');
-      tabla.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">Obteniendo datos de Google Drive...</td></tr>';
+      tabla.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">Consultando Google Drive...</td></tr>';
 
       fetch(GAS_WEBAPP_URL)
         .then(res => res.json())
         .then(data => {
           if (!data || data.length === 0) {
-            tabla.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500">No hay recetas guardadas aún.</td></tr>';
+            tabla.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500">No hay recetas guardadas en el historial.</td></tr>';
             return;
           }
           let html = '';
@@ -293,7 +387,7 @@
                 <td class="p-2">${r.cedula}</td>
                 <td class="p-2">${r.cie}</td>
                 <td class="p-2 text-center">
-                  ${r.pdfUrl ? `<a href="${r.pdfUrl}" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded text-[10px]">👁️ Ver PDF</a>` : '-'}
+                  ${r.pdfUrl ? `<a href="${r.pdfUrl}" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded text-[10px]">👁️ Abrir PDF</a>` : '-'}
                 </td>
               </tr>
             `;
@@ -301,7 +395,7 @@
           tabla.innerHTML = html;
         })
         .catch(err => {
-          tabla.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-red-400">Error al cargar recetas. Revisa el despliegue del script.</td></tr>';
+          tabla.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-red-400">Error al cargar listado. Verificar despliegue del Apps Script.</td></tr>';
         });
     }
 
