@@ -70,7 +70,7 @@
         text-transform: uppercase !important;
       }
 
-      /* Convertir inputs a texto plano para vista de impresion limpia */
+      /* Convertir inputs a texto plano para vista de impresión limpia */
       input, select, textarea {
         background: transparent !important;
         border: none !important;
@@ -274,22 +274,24 @@
     </div>
   </div>
 
- <script>
+  <script>
     const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyHF_ZdPl3-qLfIe2_RgIZQe_Y4oHVUlqlMPTnAYufvjYN5nlDsRo25RMENgOnq8Rjt9A/exec";
 
     function generarFirmaQR() {
       const medico = document.getElementById('medicoNombre').value.trim();
       const especialidad = document.getElementById('medicoEspecialidad').value.trim();
+      const cedulaMedico = document.getElementById('medicoCedula').value.trim();
       const fecha = new Date().toLocaleDateString('es-EC');
+      const statusMsg = document.getElementById('statusMsg');
 
-      if (!medico || !especialidad) {
-        document.getElementById('qrContainer').innerHTML = '<span class="text-[9px] text-slate-500 text-center no-print">Complete médico y especialidad</span>';
-        document.getElementById('firmaTexto').classList.add('hidden');
-        return;
+      if (!medico || !especialidad || !cedulaMedico) {
+        alert("Por favor complete todos los datos del especialista: Nombre, Especialidad y Cédula/Reg. MSP.");
+        statusMsg.innerText = "❌ Complete los datos del especialista para generar la firma.";
+        statusMsg.className = "text-xs font-medium text-rose-400";
+        return false;
       }
 
-      // Usamos separador estándar seguro sin saltos de línea pesados para compatibilidad de renderizado inmediato
-      const payloadQR = `FIRMADO POR: ${medico} | Especialidad: ${especialidad} | RAZON: Receta Medica aprobada por LOORMEDIC S.A | LOCALIZACION: GUAYAQUIL, CDLA VERNAZA NORTE MZ7, VILLA 19 | FECHA: ${fecha}`;
+      const payloadQR = `FIRMADO POR: ${medico} | Especialidad: ${especialidad} | Reg. MSP: ${cedulaMedico} | RAZON: Receta Medica aprobada por LOORMEDIC S.A | LOCALIZACION: GUAYAQUIL, CDLA VERNAZA NORTE MZ7, VILLA 19 | FECHA: ${fecha}`;
 
       const qrContainer = document.getElementById('qrContainer');
       qrContainer.innerHTML = '';
@@ -301,29 +303,44 @@
           height: 90,
           colorDark : "#0f172a",
           colorLight : "#ffffff",
-          correctLevel : QRCode.CorrectLevel.L
+          correctLevel : QRCode.CorrectLevel.M
         });
 
         document.getElementById('txtMedico').innerText = medico.toUpperCase();
         document.getElementById('txtEsp').innerText = especialidad.toUpperCase();
-        document.getElementById('txtFecha').innerText = "FECHA: " + fecha;
+        document.getElementById('txtFecha').innerText = "REG/CED: " + cedulaMedico + " | " + fecha;
         document.getElementById('firmaTexto').classList.remove('hidden');
+
+        statusMsg.innerText = "✅ ¡Firma Digital y Código QR generados con éxito!";
+        statusMsg.className = "text-xs font-medium text-emerald-400";
+        return true;
       } catch (err) {
         console.error("Error al generar QR:", err);
+        statusMsg.innerText = "❌ Error al generar el código QR.";
+        statusMsg.className = "text-xs font-medium text-rose-400";
+        return false;
       }
     }
 
-    // Generar QR automáticamente en tiempo real al escribir datos del médico
-    document.addEventListener('DOMContentLoaded', () => {
-      ['medicoNombre', 'medicoEspecialidad', 'medicoCedula'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('input', generarFirmaQR);
-      });
-    });
+    function obtenerQRBase64() {
+      const img = document.querySelector('#qrContainer img');
+      if (img && img.src && img.src.startsWith('data:image')) {
+        return img.src;
+      }
+      const canvas = document.querySelector('#qrContainer canvas');
+      if (canvas) {
+        return canvas.toDataURL("image/png");
+      }
+      return "";
+    }
 
     function imprimirLocal() {
-      generarFirmaQR();
-      setTimeout(() => { window.print(); }, 150);
+      let qrData = obtenerQRBase64();
+      if (!qrData) {
+        const ok = generarFirmaQR();
+        if (!ok) return;
+      }
+      setTimeout(() => { window.print(); }, 200);
     }
 
     function imprimirFormatoEnBlanco() {
@@ -349,18 +366,17 @@
     function enviarReceta(event) {
       event.preventDefault();
 
-      generarFirmaQR();
-      let qrCanvasOrImg = document.querySelector('#qrContainer img') || document.querySelector('#qrContainer canvas');
-
-      let qrDataBase64 = "";
-      if (qrCanvasOrImg) {
-        qrDataBase64 = qrCanvasOrImg.tagName === 'IMG' ? qrCanvasOrImg.src : qrCanvasOrImg.toDataURL("image/png");
+      let qrDataBase64 = obtenerQRBase64();
+      if (!qrDataBase64) {
+        const ok = generarFirmaQR();
+        if (!ok) return;
+        qrDataBase64 = obtenerQRBase64();
       }
-      
+
       const statusMsg = document.getElementById('statusMsg');
       const btnGuardar = document.getElementById('btnGuardar');
-      
-      statusMsg.innerText = "⏳ Generando PDF en Drive...";
+
+      statusMsg.innerText = "⏳ Guardando datos y generando PDF en Drive...";
       statusMsg.className = "text-xs font-medium text-amber-400";
       btnGuardar.disabled = true;
 
@@ -385,13 +401,13 @@
         body: JSON.stringify(payload)
       })
       .then(() => {
-        statusMsg.innerText = "✅ ¡Receta y PDF guardados en Drive con éxito!";
+        statusMsg.innerText = "✅ ¡Receta registrada y PDF guardado en Drive con éxito!";
         statusMsg.className = "text-xs font-medium text-emerald-400";
         btnGuardar.disabled = false;
       })
       .catch(err => {
-        statusMsg.innerText = "❌ Error al conectar con Drive.";
-        statusMsg.className = "text-xs font-medium text-red-400";
+        statusMsg.innerText = "❌ Error al conectar con Google Drive.";
+        statusMsg.className = "text-xs font-medium text-rose-400";
         btnGuardar.disabled = false;
       });
     }
@@ -427,7 +443,7 @@
           tabla.innerHTML = html;
         })
         .catch(err => {
-          tabla.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-red-400">Error al obtener las recetas.</td></tr>';
+          tabla.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-rose-400">Error al obtener las recetas.</td></tr>';
         });
     }
 
@@ -435,3 +451,5 @@
       document.getElementById('modalHistorial').classList.add('hidden');
     }
   </script>
+</body>
+</html>
