@@ -274,7 +274,7 @@
     </div>
   </div>
 
-  <script>
+ <script>
     const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyHF_ZdPl3-qLfIe2_RgIZQe_Y4oHVUlqlMPTnAYufvjYN5nlDsRo25RMENgOnq8Rjt9A/exec";
 
     function generarFirmaQR() {
@@ -283,58 +283,52 @@
       const fecha = new Date().toLocaleDateString('es-EC');
 
       if (!medico || !especialidad) {
-        alert("Por favor ingrese el Nombre y la Especialidad del médico.");
+        document.getElementById('qrContainer').innerHTML = '<span class="text-[9px] text-slate-500 text-center no-print">Complete médico y especialidad</span>';
+        document.getElementById('firmaTexto').classList.add('hidden');
         return;
       }
 
-      // Estructura exacta requerida para la lectura al escanear
-      const payloadQR = `FIRMADO POR: ${medico}\nEspecialidad: ${especialidad}\nRAZÓN: Receta Médica aprobada por LOORMEDIC S.A\nLOCALIZACIÓN: GUAYAQUIL, CDLA VERNAZA NORTE MZ7, VILLA 19\nFECHA: ${fecha}`;
+      // Usamos separador estándar seguro sin saltos de línea pesados para compatibilidad de renderizado inmediato
+      const payloadQR = `FIRMADO POR: ${medico} | Especialidad: ${especialidad} | RAZON: Receta Medica aprobada por LOORMEDIC S.A | LOCALIZACION: GUAYAQUIL, CDLA VERNAZA NORTE MZ7, VILLA 19 | FECHA: ${fecha}`;
 
       const qrContainer = document.getElementById('qrContainer');
       qrContainer.innerHTML = '';
 
-      new QRCode(qrContainer, {
-        text: payloadQR,
-        width: 90,
-        height: 90,
-        colorDark : "#0f172a",
-        colorLight : "#ffffff",
-        correctLevel : QRCode.CorrectLevel.M
-      });
+      try {
+        new QRCode(qrContainer, {
+          text: payloadQR,
+          width: 90,
+          height: 90,
+          colorDark : "#0f172a",
+          colorLight : "#ffffff",
+          correctLevel : QRCode.CorrectLevel.L
+        });
 
-      document.getElementById('txtMedico').innerText = medico;
-      document.getElementById('txtEsp').innerText = especialidad;
-      document.getElementById('txtFecha').innerText = "FECHA: " + fecha;
-      document.getElementById('firmaTexto').classList.remove('hidden');
+        document.getElementById('txtMedico').innerText = medico.toUpperCase();
+        document.getElementById('txtEsp').innerText = especialidad.toUpperCase();
+        document.getElementById('txtFecha').innerText = "FECHA: " + fecha;
+        document.getElementById('firmaTexto').classList.remove('hidden');
+      } catch (err) {
+        console.error("Error al generar QR:", err);
+      }
     }
 
+    // Generar QR automáticamente en tiempo real al escribir datos del médico
+    document.addEventListener('DOMContentLoaded', () => {
+      ['medicoNombre', 'medicoEspecialidad', 'medicoCedula'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', generarFirmaQR);
+      });
+    });
+
     function imprimirLocal() {
-      const qrImg = document.querySelector('#qrContainer img');
-      if (!qrImg) {
-        generarFirmaQR();
-      }
-      setTimeout(() => {
-        window.print();
-      }, 200);
+      generarFirmaQR();
+      setTimeout(() => { window.print(); }, 150);
     }
 
     function imprimirFormatoEnBlanco() {
-      // Limpiar campos para imprimir solo el formato
-      document.getElementById('pacienteNombre').value = '';
-      document.getElementById('pacienteCedula').value = '';
-      document.getElementById('pacienteEdad').value = '';
-      document.getElementById('cieCodigo').value = '';
-      document.getElementById('prescripcionRx').value = '';
-      document.getElementById('indicacionesRx').value = '';
-      document.getElementById('medicoNombre').value = '';
-      document.getElementById('medicoEspecialidad').value = '';
-      document.getElementById('medicoCedula').value = '';
-      document.getElementById('qrContainer').innerHTML = '';
-      document.getElementById('firmaTexto').classList.add('hidden');
-
-      setTimeout(() => {
-        window.print();
-      }, 100);
+      limpiarFormulario();
+      setTimeout(() => { window.print(); }, 150);
     }
 
     function limpiarFormulario() {
@@ -355,11 +349,8 @@
     function enviarReceta(event) {
       event.preventDefault();
 
+      generarFirmaQR();
       let qrCanvasOrImg = document.querySelector('#qrContainer img') || document.querySelector('#qrContainer canvas');
-      if (!qrCanvasOrImg) {
-        generarFirmaQR();
-        qrCanvasOrImg = document.querySelector('#qrContainer img') || document.querySelector('#qrContainer canvas');
-      }
 
       let qrDataBase64 = "";
       if (qrCanvasOrImg) {
@@ -444,5 +435,3 @@
       document.getElementById('modalHistorial').classList.add('hidden');
     }
   </script>
-</body>
-</html>
