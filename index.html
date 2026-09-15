@@ -14,17 +14,18 @@
       background-size: 380px auto;
     }
 
-    /* ESTILOS DE IMPRESIÓN LOCAL EXACTA A 1 PÁGINA */
+    /* ESTILOS DE IMPRESIÓN LOCAL EXACTA A PDF DRIVE (1 HOJA A4) */
     @media print {
       @page {
         size: A4 portrait;
-        margin: 10mm 15mm 10mm 15mm;
+        margin: 12mm 15mm 12mm 15mm;
       }
       
       body {
         background-color: #ffffff !important;
-        color: #0f172a !important;
-        font-size: 11pt !important;
+        color: #1e293b !important;
+        font-family: 'Helvetica Neue', Arial, sans-serif !important;
+        font-size: 10pt !important;
         padding: 0 !important;
         margin: 0 !important;
         -webkit-print-color-adjust: exact;
@@ -48,44 +49,52 @@
         background-size: 400px auto !important;
       }
 
+      .header-title {
+        color: #1e3a8a !important;
+      }
+
       .section-block {
         background-color: #ffffff !important;
         border: 1px solid #cbd5e1 !important;
         padding: 8px 12px !important;
-        margin-bottom: 10px !important;
+        margin-bottom: 12px !important;
         border-radius: 4px !important;
         break-inside: avoid;
       }
 
       .section-title {
         color: #0f172a !important;
-        border-bottom: 1px solid #cbd5e1 !important;
+        border-bottom: 1px solid #e2e8f0 !important;
         font-size: 9pt !important;
+        font-weight: bold !important;
+        text-transform: uppercase !important;
       }
 
-      /* Reemplazar inputs por apariencia plana en impresion */
+      /* Convertir inputs a texto plano para vista de impresion limpia */
       input, select, textarea {
         background: transparent !important;
         border: none !important;
-        color: #0f172a !important;
+        color: #1e293b !important;
         padding: 0 !important;
         box-shadow: none !important;
         resize: none !important;
         font-size: 10pt !important;
+        outline: none !important;
       }
 
       textarea {
         background-color: #f8fafc !important;
         border: 1px solid #e2e8f0 !important;
-        padding: 4px !important;
+        padding: 6px !important;
+        min-height: 45px !important;
       }
 
-      .header-title {
-        color: #1e3a8a !important;
-      }
-
-      .text-slate-400, .text-slate-300 {
+      .text-slate-400, .text-slate-300, .text-slate-200 {
         color: #334155 !important;
+      }
+      
+      .text-white {
+        color: #0f172a !important;
       }
     }
   </style>
@@ -110,14 +119,28 @@
             <p class="text-xs text-slate-400 font-medium">Receta Médica Digital — AM 00031-2020</p>
           </div>
         </div>
-        <div class="text-right no-print flex gap-2">
-          <button type="button" onclick="limpiarFormulario()" class="bg-rose-700 hover:bg-rose-800 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition">
-            🧹 Limpiar
+        
+        <div class="text-right text-xs text-slate-400 leading-tight hidden sm:block">
+          <div>info@loormedic.com</div>
+          <div>0960987088</div>
+          <div>Cdla. Vernaza Norte Mz7, Villa 19</div>
+          <div>Guayaquil - Ecuador</div>
+        </div>
+      </div>
+
+      <!-- Barra de acciones superior -->
+      <div class="no-print flex flex-wrap justify-between items-center bg-slate-900/80 p-3 rounded-lg border border-slate-700 mb-4 gap-2">
+        <div class="flex flex-wrap gap-2">
+          <button type="button" onclick="imprimirFormatoEnBlanco()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded shadow transition">
+            📄 Imprimir Formato en Blanco
           </button>
-          <button type="button" onclick="cargarHistorialRecetas()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition">
+          <button type="button" onclick="cargarHistorialRecetas()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-3 py-2 rounded shadow transition">
             📋 Ver Recetas
           </button>
         </div>
+        <button type="button" onclick="limpiarFormulario()" class="bg-rose-700 hover:bg-rose-800 text-white text-xs font-semibold px-3 py-2 rounded shadow transition">
+          🧹 Limpiar
+        </button>
       </div>
 
       <form id="recetaForm" onsubmit="enviarReceta(event)" class="space-y-4">
@@ -176,15 +199,15 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
             <div>
               <label class="block text-xs font-medium text-slate-400">Nombre del Médico</label>
-              <input type="text" id="medicoNombre" value="WILSON RAMOS" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
+              <input type="text" id="medicoNombre" placeholder="Ej: Dr. Wilson Ramos" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-400">Especialidad</label>
-              <input type="text" id="medicoEspecialidad" value="MEDICINA GENERAL" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
+              <input type="text" id="medicoEspecialidad" placeholder="Ej: Medicina General" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-400">Cédula / Reg. MSP</label>
-              <input type="text" id="medicoCedula" value="0950452383" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
+              <input type="text" id="medicoCedula" placeholder="Ej: 0950452383" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
             </div>
           </div>
         </div>
@@ -257,17 +280,15 @@
     function generarFirmaQR() {
       const medico = document.getElementById('medicoNombre').value.trim();
       const especialidad = document.getElementById('medicoEspecialidad').value.trim();
-      const cedula = document.getElementById('medicoCedula').value.trim();
-      const paciente = document.getElementById('pacienteNombre').value.trim();
-      const cie = document.getElementById('cieCodigo').value.trim();
-      const fecha = new Date().toISOString().split('T')[0];
+      const fecha = new Date().toLocaleDateString('es-EC');
 
-      if (!medico || !paciente || !cie) {
-        alert("Por favor completa los datos del paciente, CIE y especialista.");
+      if (!medico || !especialidad) {
+        alert("Por favor ingrese el Nombre y la Especialidad del médico.");
         return;
       }
 
-      const payloadQR = `LOORMEDIC-RECETA|MED:${medico}|REG:${cedula}|PAC:${paciente}|CIE:${cie}|FECHA:${fecha}`;
+      // Estructura exacta requerida para la lectura al escanear
+      const payloadQR = `FIRMADO POR: ${medico}\nEspecialidad: ${especialidad}\nRAZÓN: Receta Médica aprobada por LOORMEDIC S.A\nLOCALIZACIÓN: GUAYAQUIL, CDLA VERNAZA NORTE MZ7, VILLA 19\nFECHA: ${fecha}`;
 
       const qrContainer = document.getElementById('qrContainer');
       qrContainer.innerHTML = '';
@@ -281,14 +302,13 @@
         correctLevel : QRCode.CorrectLevel.M
       });
 
-      document.getElementById('txtMedico').innerText = "DR. " + medico;
+      document.getElementById('txtMedico').innerText = medico;
       document.getElementById('txtEsp').innerText = especialidad;
-      document.getElementById('txtFecha').innerText = "REG/CED: " + cedula + " | " + fecha;
+      document.getElementById('txtFecha').innerText = "FECHA: " + fecha;
       document.getElementById('firmaTexto').classList.remove('hidden');
     }
 
     function imprimirLocal() {
-      // Si no ha generado el QR, lo genera antes de imprimir
       const qrImg = document.querySelector('#qrContainer img');
       if (!qrImg) {
         generarFirmaQR();
@@ -298,6 +318,25 @@
       }, 200);
     }
 
+    function imprimirFormatoEnBlanco() {
+      // Limpiar campos para imprimir solo el formato
+      document.getElementById('pacienteNombre').value = '';
+      document.getElementById('pacienteCedula').value = '';
+      document.getElementById('pacienteEdad').value = '';
+      document.getElementById('cieCodigo').value = '';
+      document.getElementById('prescripcionRx').value = '';
+      document.getElementById('indicacionesRx').value = '';
+      document.getElementById('medicoNombre').value = '';
+      document.getElementById('medicoEspecialidad').value = '';
+      document.getElementById('medicoCedula').value = '';
+      document.getElementById('qrContainer').innerHTML = '';
+      document.getElementById('firmaTexto').classList.add('hidden');
+
+      setTimeout(() => {
+        window.print();
+      }, 100);
+    }
+
     function limpiarFormulario() {
       document.getElementById('pacienteNombre').value = '';
       document.getElementById('pacienteCedula').value = '';
@@ -305,6 +344,9 @@
       document.getElementById('cieCodigo').value = '';
       document.getElementById('prescripcionRx').value = '';
       document.getElementById('indicacionesRx').value = '';
+      document.getElementById('medicoNombre').value = '';
+      document.getElementById('medicoEspecialidad').value = '';
+      document.getElementById('medicoCedula').value = '';
       document.getElementById('qrContainer').innerHTML = '<span class="text-[9px] text-slate-500 text-center no-print">Presione \'Generar Firma\'</span>';
       document.getElementById('firmaTexto').classList.add('hidden');
       document.getElementById('statusMsg').innerText = '';
@@ -313,7 +355,6 @@
     function enviarReceta(event) {
       event.preventDefault();
 
-      // Asegurar generación de QR antes de enviar
       let qrCanvasOrImg = document.querySelector('#qrContainer img') || document.querySelector('#qrContainer canvas');
       if (!qrCanvasOrImg) {
         generarFirmaQR();
@@ -328,7 +369,7 @@
       const statusMsg = document.getElementById('statusMsg');
       const btnGuardar = document.getElementById('btnGuardar');
       
-      statusMsg.innerText = "⏳ Generando PDF en Drive con QR y marcas oficiales...";
+      statusMsg.innerText = "⏳ Generando PDF en Drive...";
       statusMsg.className = "text-xs font-medium text-amber-400";
       btnGuardar.disabled = true;
 
@@ -358,7 +399,7 @@
         btnGuardar.disabled = false;
       })
       .catch(err => {
-        statusMsg.innerText = "❌ Error de comunicación con Google Drive.";
+        statusMsg.innerText = "❌ Error al conectar con Drive.";
         statusMsg.className = "text-xs font-medium text-red-400";
         btnGuardar.disabled = false;
       });
@@ -374,7 +415,7 @@
         .then(res => res.json())
         .then(data => {
           if (!data || data.length === 0) {
-            tabla.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500">No hay recetas guardadas en el historial.</td></tr>';
+            tabla.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500">No hay recetas guardadas.</td></tr>';
             return;
           }
           let html = '';
@@ -395,7 +436,7 @@
           tabla.innerHTML = html;
         })
         .catch(err => {
-          tabla.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-red-400">Error al cargar listado. Verificar despliegue del Apps Script.</td></tr>';
+          tabla.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-red-400">Error al obtener las recetas.</td></tr>';
         });
     }
 
