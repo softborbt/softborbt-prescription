@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Receta Médica Digital - AM 00031-2020</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body class="bg-slate-100 min-h-screen p-4 md:p-8">
+  <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-xl p-6 md:p-8 border border-slate-200">
+    
+    <!-- Encabezado -->
+    <div class="flex justify-between items-center border-b pb-4 mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-blue-900">CONSULTORA LOORMEDIC S.A.</h1>
+        <p class="text-sm text-slate-500">Formato Homologado - Acuerdo Ministerial 00031-2020</p>
+      </div>
+      <div class="text-right text-xs text-slate-500">
+        <p>info@loormedic.com</p>
+        <p>0960987088</p>
+      </div>
+    </div>
+
+    <form id="recetaForm" class="space-y-6">
+      <!-- Sección Paciente -->
+      <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+        <h2 class="font-semibold text-slate-700 mb-3 border-b pb-1">1. Datos del Paciente</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="md:col-span-2">
+            <label class="block text-xs font-medium text-slate-600">Nombres Completos</label>
+            <input type="text" id="pacienteNombre" value="MOROCHO YAMBAY" class="w-full mt-1 p-2 border rounded text-sm" required>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Cédula / RUC</label>
+            <input type="text" id="pacienteCedula" value="0925062639" class="w-full mt-1 p-2 border rounded text-sm" required>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Edad</label>
+            <input type="number" id="pacienteEdad" value="37" class="w-full mt-1 p-2 border rounded text-sm" required>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Código CIE-10 / CIE-11</label>
+            <input type="text" id="cieCodigo" value="E78.2 / E11.9" class="w-full mt-1 p-2 border rounded text-sm" required>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Tipo de Diagnóstico</label>
+            <select id="tipoDiag" class="w-full mt-1 p-2 border rounded text-sm">
+              <option value="Definitivo" selected>Definitivo</option>
+              <option value="Presuntivo">Presuntivo</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección Médico -->
+      <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+        <h2 class="font-semibold text-slate-700 mb-3 border-b pb-1">2. Datos del Especialista</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Nombre Completo</label>
+            <input type="text" id="medicoNombre" value="WILSON RAMOS" class="w-full mt-1 p-2 border rounded text-sm" required>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Especialidad</label>
+            <input type="text" id="medicoEspecialidad" value="MEDICINA GENERAL" class="w-full mt-1 p-2 border rounded text-sm" required>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Cédula / Reg. MSP</label>
+            <input type="text" id="medicoCedula" value="0950452383" class="w-full mt-1 p-2 border rounded text-sm" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- Firma Digital y QR -->
+      <div class="flex flex-col md:flex-row items-center justify-between bg-slate-50 p-4 rounded-lg border border-slate-200 gap-4">
+        <div>
+          <button type="button" onclick="generarFirmaQR()" class="bg-blue-800 hover:bg-blue-900 text-white font-semibold py-2 px-6 rounded shadow transition">
+            🖋️ Generar Firma y Código QR
+          </button>
+          <p class="text-xs text-slate-500 mt-1">Generación local en cliente sin consumo de API Google.</p>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div id="qrContainer" class="p-2 bg-white border rounded shadow-sm"></div>
+          <div id="firmaTexto" class="text-xs text-slate-600 font-mono hidden">
+            <p class="font-bold border-b pb-1">FIRMADO DIGITALMENTE</p>
+            <p id="txtMedico"></p>
+            <p id="txtEsp"></p>
+            <p id="txtFecha"></p>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    function generarFirmaQR() {
+      const medico = document.getElementById('medicoNombre').value;
+      const especialidad = document.getElementById('medicoEspecialidad').value;
+      const cedula = document.getElementById('medicoCedula').value;
+      const paciente = document.getElementById('pacienteNombre').value;
+      const cie = document.getElementById('cieCodigo').value;
+      const fecha = new Date().toISOString().split('T')[0];
+
+      // Payload estandarizado para validación pública
+      const payloadQR = `LOORMEDIC-RECETA|MED:${medico}|REG:${cedula}|PAC:${paciente}|CIE:${cie}|FECHA:${fecha}`;
+
+      // Limpiar QR anterior
+      const qrContainer = document.getElementById('qrContainer');
+      qrContainer.innerHTML = '';
+
+      // Generación 100% Client-Side (0 Cuota GAS)
+      new QRCode(qrContainer, {
+        text: payloadQR,
+        width: 100,
+        height: 100,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.M
+      });
+
+      // Mostrar metadatos de firma
+      document.getElementById('txtMedico').innerText = "DR. " + medico;
+      document.getElementById('txtEsp').innerText = especialidad;
+      document.getElementById('txtFecha').innerText = "FECHA: " + fecha;
+      document.getElementById('firmaTexto').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
