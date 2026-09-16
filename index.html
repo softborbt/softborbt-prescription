@@ -11,6 +11,9 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Loormedic Recetas">
 
+  <!-- Web App Manifest en línea para PWA -->
+  <link rel="manifest" href='data:application/manifest+json,{"name":"Loormedic Receta Digital","short_name":"RecetaApp","start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#0f172a","icons":[{"src":"https://raw.githubusercontent.com/softborbt/softborbt-clientes/refs/heads/main/loormedic1x1.png","sizes":"192x192","type":"image/png"}]}'>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   
@@ -233,14 +236,21 @@
           </div>
         </div>
 
-        <div class="no-print bg-slate-800/80 border border-slate-700/60 rounded-lg p-3 mb-4 flex justify-between items-center">
+        <div class="no-print bg-slate-800/80 border border-slate-700/60 rounded-lg p-3 mb-4 flex justify-between items-center flex-wrap gap-2">
           <div class="text-xs text-slate-300">
             <span class="font-semibold text-blue-400" id="welcomeDoctorText">Bienvenido</span>
             <span class="block text-[11px] text-slate-400">Sesión activa y autorizada para emisión de recetarios institucionales.</span>
           </div>
-          <button onclick="cerrarSesion()" class="bg-slate-700 hover:bg-slate-600 text-white text-[11px] px-3 py-1.5 rounded transition">
-            🔒 Cerrar Sesión
-          </button>
+          
+          <div class="flex items-center gap-2">
+            <!-- Botón PWA / Instalar App -->
+            <button id="btnInstallApp" onclick="instalarPWA()" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-semibold px-3 py-1.5 rounded transition items-center gap-1 shadow">
+              📲 Instalar Aplicación
+            </button>
+            <button onclick="cerrarSesion()" class="bg-slate-700 hover:bg-slate-600 text-white text-[11px] px-3 py-1.5 rounded transition">
+              🔒 Cerrar Sesión
+            </button>
+          </div>
         </div>
 
         <div class="no-print flex flex-wrap justify-between items-center bg-slate-950 p-3 rounded-lg border border-slate-800 mb-4 gap-2">
@@ -330,7 +340,7 @@
             </div>
           </div>
 
-          <!-- Sección 3: Datos del Médico con Celular añadido -->
+          <!-- Sección 3: Datos del Médico (Teléfono editable por el médico) -->
           <div class="section-block bg-slate-950/60 p-4 rounded-lg border border-slate-800">
             <h2 class="font-semibold text-slate-200 text-sm mb-2 border-b border-slate-800 pb-1">3. DATOS DEL ESPECIALISTA PRESCRIPTOR</h2>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-sm">
@@ -347,8 +357,8 @@
                 <input type="text" id="medicoCedula" readonly class="w-full mt-1 p-2 border border-slate-800 rounded bg-slate-900/80 text-slate-300 font-semibold cursor-not-allowed">
               </div>
               <div>
-                <label class="block text-xs font-medium text-slate-400">Teléfono / Celular</label>
-                <input type="text" id="medicoCelular" readonly class="w-full mt-1 p-2 border border-slate-800 rounded bg-slate-900/80 text-slate-300 font-semibold cursor-not-allowed">
+                <label class="block text-xs font-medium text-slate-400">Teléfono / Celular (Escriba aquí)</label>
+                <input type="text" id="medicoCelular" placeholder="Ej: 0991234567" class="w-full mt-1 p-2 border border-slate-800 rounded bg-slate-900 text-white focus:outline-none focus:border-blue-500 font-semibold">
               </div>
             </div>
           </div>
@@ -358,7 +368,7 @@
             <div class="no-print space-y-2 w-full md:w-auto">
               <div class="flex flex-wrap gap-2">
                 <button type="button" onclick="abrirModalFirma()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded text-xs shadow transition">
-                  🖋️ Generar Firma QR
+                  🖋️ Validar y Firmar
                 </button>
                 <button type="submit" id="btnGuardar" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-3 rounded text-xs shadow transition">
                   💾 Guardar en Sheet
@@ -366,13 +376,21 @@
                 <button type="button" onclick="imprimirLocal()" class="bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2 px-3 rounded text-xs shadow transition">
                   🖨️ Imprimir Local
                 </button>
+                
+                <!-- BOTÓN ENVIAR RECETA POR WHATSAPP -->
+                <button type="button" onclick="enviarPorWhatsApp()" class="bg-[#25D366] hover:bg-[#128C7E] text-slate-950 font-bold py-2 px-3 rounded text-xs shadow transition flex items-center gap-1.5">
+                  <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.572-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                  </svg>
+                  <span>Enviar Receta por WhatsApp</span>
+                </button>
               </div>
               <p id="statusMsg" class="text-xs font-medium text-slate-400"></p>
             </div>
 
             <div class="flex items-center space-x-4">
               <div id="qrContainer" class="p-1 bg-white border border-slate-800 rounded shadow-sm w-[95px] h-[95px] flex items-center justify-center">
-                <span class="text-[9px] text-slate-500 text-center no-print">Presione 'Generar Firma'</span>
+                <span class="text-[9px] text-slate-500 text-center no-print">Presione 'Validar y Firmar'</span>
               </div>
               <div id="firmaTexto" class="text-xs text-slate-300 font-mono hidden border-l pl-3 border-slate-800">
                 <p class="font-bold border-b border-slate-800 pb-0.5 text-blue-400">FIRMADO DIGITALMENTE</p>
@@ -420,6 +438,27 @@
     const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyHF_ZdPl3-qLfIe2_RgIZQe_Y4oHVUlqlMPTnAYufvjYN5nlDsRo25RMENgOnq8Rjt9A/exec";
 
     let currentUser = null;
+    let deferredPrompt = null;
+
+    // Registro de PWA e Instalación
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btnInstall = document.getElementById('btnInstallApp');
+      if (btnInstall) btnInstall.classList.remove('hidden');
+    });
+
+    function instalarPWA() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            document.getElementById('btnInstallApp').classList.add('hidden');
+          }
+          deferredPrompt = null;
+        });
+      }
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
       const savedCedula = localStorage.getItem('rememberedCedula');
@@ -564,7 +603,7 @@
       document.getElementById('medicoNombre').value = user.nombre;
       document.getElementById('medicoEspecialidad').value = user.cargoEsp;
       document.getElementById('medicoCedula').value = user.cedula;
-      document.getElementById('medicoCelular').value = user.celular || "Sin registrar";
+      document.getElementById('medicoCelular').value = user.celular || "";
     }
 
     function cerrarSesion() {
@@ -594,14 +633,21 @@
       const passEntered = document.getElementById('confirmFirmaPass').value.trim();
       const errBox = document.getElementById('firmaError');
 
-      if (passEntered !== currentUser.password) {
+      if (!currentUser || passEntered !== currentUser.password) {
         errBox.innerText = "❌ Contraseña incorrecta. No se puede firmar.";
         errBox.classList.remove('hidden');
         return;
       }
 
+      const statusMsg = document.getElementById('statusMsg');
+      statusMsg.innerText = "⏳ Generando QR y validando firma...";
+      statusMsg.className = "text-xs font-medium text-amber-400";
+
       cerrarFirmaModal();
-      generarFirmaQR();
+
+      setTimeout(() => {
+        generarFirmaQR();
+      }, 200);
     }
 
     function generarFirmaQR() {
@@ -617,8 +663,8 @@
 
       new QRCode(qrContainer, {
         text: payloadQR,
-        width: 90,
-        height: 90,
+        width: 88,
+        height: 88,
         colorDark : "#0f172a",
         colorLight : "#ffffff",
         correctLevel : QRCode.CorrectLevel.M
@@ -669,9 +715,32 @@
       document.getElementById('prescripcionRx').value = '';
       document.getElementById('indicacionesRx').value = '';
       document.getElementById('alertaEdad').classList.add('hidden');
-      document.getElementById('qrContainer').innerHTML = '<span class="text-[9px] text-slate-500 text-center no-print">Presione \'Generar Firma\'</span>';
+      document.getElementById('qrContainer').innerHTML = '<span class="text-[9px] text-slate-500 text-center no-print">Presione \'Validar y Firmar\'</span>';
       document.getElementById('firmaTexto').classList.add('hidden');
       document.getElementById('statusMsg').innerText = '';
+    }
+
+    function enviarPorWhatsApp() {
+      const paciente = document.getElementById('pacienteNombre').value.trim();
+      const prescripcion = document.getElementById('prescripcionRx').value.trim();
+      const indicaciones = document.getElementById('indicacionesRx').value.trim();
+
+      if (!paciente || !prescripcion) {
+        alert("Complete al menos el nombre del paciente y la prescripción antes de enviar por WhatsApp.");
+        return;
+      }
+
+      const textoWA = `*CONSULTORA LOORMEDIC S.A.*\n*RECETA MÉDICA DIGITAL*\n\n` +
+        `👤 *Paciente:* ${paciente}\n` +
+        `📅 *Fecha:* ${document.getElementById('fechaPrescripcion').value}\n\n` +
+        `💊 *Medicamento(s):*\n${prescripcion}\n\n` +
+        `📋 *Indicaciones:* ${indicaciones}\n\n` +
+        `👨‍⚕️ *Médico Prescriptor:* Dr. ${currentUser.nombre}\n` +
+        `📞 *Contacto:* ${document.getElementById('medicoCelular').value || 'N/A'}\n\n` +
+        `_Receta homologada conforme al AM 00031-2020 MSP_`;
+
+      const url = `https://wa.me/?text=${encodeURIComponent(textoWA)}`;
+      window.open(url, '_blank');
     }
 
     function enviarReceta(event) {
@@ -703,7 +772,7 @@
         indicaciones: document.getElementById('indicacionesRx').value,
         medicoNombre: currentUser.nombre,
         medicoCedula: currentUser.cedula,
-        medicoCelular: currentUser.celular || ""
+        medicoCelular: document.getElementById('medicoCelular').value || ""
       };
 
       fetch(GAS_WEBAPP_URL, {
