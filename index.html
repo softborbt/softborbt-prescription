@@ -11,7 +11,6 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Loormedic Recetas">
 
-  <!-- Script Dinámico para Manifest PWA Correcto sin Errores de Sintaxis -->
   <script>
     const manifestJson = {
       "name": "Loormedic Receta Digital",
@@ -96,7 +95,7 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
 
-  <!-- CONTENEDOR DE LOGIN -->
+  <!-- LOGIN -->
   <div id="loginSection" class="min-h-screen flex flex-col md:flex-row">
     <div class="md:w-1/2 bg-slate-900 flex flex-col justify-between p-8 border-b md:border-b-0 md:border-r border-slate-800 relative overflow-hidden">
       <div class="absolute inset-0 watermark opacity-10"></div>
@@ -339,7 +338,7 @@
             </div>
           </div>
 
-          <!-- Sección 2: PRESCRIPCIÓN MÉDICA CON CHECKBOX DE ANTIMICROBIANOS -->
+          <!-- Sección 2 -->
           <div class="section-block bg-slate-950/60 p-4 rounded-lg border border-slate-800">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-2 mb-3 gap-2">
               <h2 class="font-semibold text-slate-200 text-sm">
@@ -373,7 +372,7 @@
             </div>
           </div>
 
-          <!-- Sección 3: Datos del Médico -->
+          <!-- Sección 3 -->
           <div class="section-block bg-slate-950/60 p-4 rounded-lg border border-slate-800">
             <h2 class="font-semibold text-slate-200 text-sm mb-2 border-b border-slate-800 pb-1">3. DATOS DEL ESPECIALISTA PRESCRIPTOR</h2>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-sm">
@@ -396,7 +395,7 @@
             </div>
           </div>
 
-          <!-- Acciones y QR ultrasónico por Imagen Directa -->
+          <!-- Acciones y QR -->
           <div class="section-block flex flex-col md:flex-row items-center justify-between bg-slate-950 p-4 rounded-lg border border-slate-800 gap-4">
             <div class="no-print space-y-2 w-full md:w-auto">
               <div class="flex flex-wrap gap-2">
@@ -406,15 +405,15 @@
                 <button type="submit" id="btnGuardar" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-3 rounded text-xs shadow transition">
                   💾 Guardar en Sheet
                 </button>
-                <button type="button" onclick="imprimirLocal()" class="bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2 px-3 rounded text-xs shadow transition">
-                  🖨️ Imprimir Local
+                <button type="button" onclick="imprimirPDFLocal()" class="bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2 px-3 rounded text-xs shadow transition">
+                  🖨️ Imprimir Local (PDF Drive)
                 </button>
                 
-                <button type="button" onclick="enviarPorWhatsApp()" class="bg-[#25D366] hover:bg-[#128C7E] text-slate-950 font-bold py-2 px-3 rounded text-xs shadow transition flex items-center gap-1.5">
+                <button type="button" onclick="enviarPorWhatsAppDirecto()" class="bg-[#25D366] hover:bg-[#128C7E] text-slate-950 font-bold py-2 px-3 rounded text-xs shadow transition flex items-center gap-1.5">
                   <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                     <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.572-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
                   </svg>
-                  <span>Enviar Receta por WhatsApp</span>
+                  <span>Enviar por WhatsApp</span>
                 </button>
               </div>
               <p id="statusMsg" class="text-xs font-medium text-slate-400"></p>
@@ -467,10 +466,12 @@
   </div>
 
   <script>
+    // URL desplegada del script
     const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyHF_ZdPl3-qLfIe2_RgIZQe_Y4oHVUlqlMPTnAYufvjYN5nlDsRo25RMENgOnq8Rjt9A/exec";
 
     let currentUser = null;
     let deferredPrompt = null;
+    let currentSavedPdfUrl = null;
 
     function toggleAntimicrobianoNota() {
       const isChecked = document.getElementById('chkAntimicrobiano').checked;
@@ -485,7 +486,6 @@
       }
     }
 
-    // Registro de PWA e Instalación
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
@@ -695,7 +695,6 @@
       }, 100);
     }
 
-    // GENERACIÓN ULTRASÓNICA DE QR MEDIANTE ETIQUETA IMG DIRECTA (Sin desbordamiento de memoria ni cuotas)
     function generarFirmaQR() {
       const medico = currentUser.nombre;
       const especialidad = currentUser.cargoEsp;
@@ -728,13 +727,148 @@
       return "";
     }
 
-    function imprimirLocal() {
-      let qrData = obtenerQRBase64();
-      if (!qrData) {
-        alert("Por favor valide su firma digital con contraseña antes de imprimir.");
-        return;
+    function guardarRecetaPromesa() {
+      return new Promise((resolve, reject) => {
+        const payload = {
+          action: "saveReceta",
+          fechaPrescripcion: document.getElementById('fechaPrescripcion').value,
+          pacienteNombre: document.getElementById('pacienteNombre').value,
+          pacienteCedula: document.getElementById('pacienteCedula').value,
+          pacienteEdad: document.getElementById('pacienteEdad').value,
+          cieCodigo: document.getElementById('cieCodigo').value,
+          tipoDiag: document.getElementById('tipoDiag').value,
+          alergias: document.getElementById('pacienteAlergias').value,
+          prescripcion: document.getElementById('prescripcionRx').value,
+          indicaciones: document.getElementById('indicacionesRx').value,
+          antimicrobianos: document.getElementById('chkAntimicrobiano').checked ? "SÍ" : "NO",
+          medicoNombre: currentUser.nombre,
+          medicoEspecialidad: currentUser.cargoEsp,
+          medicoCedula: currentUser.cedula,
+          medicoCelular: document.getElementById('medicoCelular').value || ""
+        };
+
+        fetch(GAS_WEBAPP_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(resData => {
+          if (resData && resData.pdfUrl) {
+            currentSavedPdfUrl = resData.pdfUrl;
+            resolve(resData.pdfUrl);
+          } else {
+            reject("No se recibió la URL del PDF generado.");
+          }
+        })
+        .catch(err => reject(err));
+      });
+    }
+
+    // IMPRIMIR PDF DE DRIVE DIRECTAMENTE
+    async function imprimirPDFLocal() {
+      if (!validarFormularioCompleto()) return;
+
+      const statusMsg = document.getElementById('statusMsg');
+      statusMsg.innerText = "⏳ Generando PDF en Drive para impresión nativa...";
+      statusMsg.className = "text-xs font-medium text-amber-400";
+
+      try {
+        let pdfUrl = currentSavedPdfUrl;
+        if (!pdfUrl) {
+          pdfUrl = await guardarRecetaPromesa();
+        }
+        statusMsg.innerText = "✅ Abriendo PDF para impresión...";
+        statusMsg.className = "text-xs font-medium text-emerald-400";
+
+        // Abrir PDF de Drive e invocar la ventana de impresión nativa
+        const printWindow = window.open(pdfUrl, '_blank');
+        if (printWindow) {
+          printWindow.focus();
+          setTimeout(() => {
+            printWindow.print();
+          }, 1000);
+        } else {
+          alert("Por favor habilite las ventanas emergentes para abrir el PDF.");
+        }
+      } catch (err) {
+        console.error(err);
+        statusMsg.innerText = "❌ Error al generar PDF para impresión.";
+        statusMsg.className = "text-xs font-medium text-rose-400";
       }
-      window.print();
+    }
+
+    function validarFormularioCompleto() {
+      const paciente = document.getElementById('pacienteNombre').value.trim();
+      const prescripcion = document.getElementById('prescripcionRx').value.trim();
+      const qr = obtenerQRBase64();
+
+      if (!paciente || !prescripcion) {
+        alert("Complete el nombre del paciente y la prescripción.");
+        return false;
+      }
+      if (!qr) {
+        alert("Debe validar su firma digital con contraseña antes de continuar.");
+        return false;
+      }
+      return true;
+    }
+
+    // ENVIAR POR WHATSAPP CON TELÉFONO DE PACIENTE Y LINK DE PDF DRIVE
+    async function enviarPorWhatsAppDirecto() {
+      if (!validarFormularioCompleto()) return;
+
+      let numTel = prompt("Ingrese el número celular del paciente para abrir el chat directo (Ej: 0987654321 o 593987654321):");
+      if (!numTel) return;
+
+      numTel = numTel.replace(/\D/g, '');
+      if (numTel.startsWith("0")) {
+        numTel = "593" + numTel.substring(1);
+      }
+
+      const statusMsg = document.getElementById('statusMsg');
+      statusMsg.innerText = "⏳ Generando documento PDF para WhatsApp...";
+      statusMsg.className = "text-xs font-medium text-amber-400";
+
+      try {
+        let pdfUrl = currentSavedPdfUrl;
+        if (!pdfUrl) {
+          pdfUrl = await guardarRecetaPromesa();
+        }
+
+        const paciente = document.getElementById('pacienteNombre').value.trim();
+        const prescripcion = document.getElementById('prescripcionRx').value.trim();
+        const indicaciones = document.getElementById('indicacionesRx').value.trim();
+        const tieneAntimicrobianos = document.getElementById('chkAntimicrobiano').checked;
+
+        let notaAntimicrobianoWA = "";
+        if (tieneAntimicrobianos) {
+          notaAntimicrobianoWA = `\n\n⚠️ *NOTA IMPORTANTE:* Esta receta contiene antimicrobianos (vigencia máxima de *3 días*).`;
+        }
+
+        const textoWA = `*CONSULTORA LOORMEDIC S.A.*\n*RECETA MÉDICA DIGITAL*\n\n` +
+          `👤 *Paciente:* ${paciente}\n` +
+          `📅 *Fecha:* ${document.getElementById('fechaPrescripcion').value}\n\n` +
+          `💊 *Medicamento(s):*\n${prescripcion}\n\n` +
+          `📋 *Indicaciones:* ${indicaciones}` +
+          `${notaAntimicrobianoWA}\n\n` +
+          `📄 *Descargar Receta Oficial (PDF):*\n${pdfUrl}\n\n` +
+          `👨‍⚕️ *Especialista:* Dr. ${currentUser.nombre}\n` +
+          `🎖️ *Especialidad:* ${currentUser.cargoEsp}\n` +
+          `📞 *Contacto:* ${document.getElementById('medicoCelular').value || 'N/A'}\n\n` +
+          `_Receta homologada conforme al AM 00031-2020 MSP_`;
+
+        statusMsg.innerText = "✅ Abriendo WhatsApp...";
+        statusMsg.className = "text-xs font-medium text-emerald-400";
+
+        const url = `https://wa.me/${numTel}?text=${encodeURIComponent(textoWA)}`;
+        window.open(url, '_blank');
+
+      } catch (err) {
+        console.error(err);
+        statusMsg.innerText = "❌ Error al generar el enlace de WhatsApp.";
+        statusMsg.className = "text-xs font-medium text-rose-400";
+      }
     }
 
     function imprimirFormatoEnBlanco() {
@@ -756,90 +890,33 @@
       document.getElementById('qrContainer').innerHTML = '<span class="text-[9px] text-slate-500 text-center no-print">Presione \'Validar y Firmar\'</span>';
       document.getElementById('firmaTexto').classList.add('hidden');
       document.getElementById('statusMsg').innerText = '';
-    }
-
-    function enviarPorWhatsApp() {
-      const paciente = document.getElementById('pacienteNombre').value.trim();
-      const prescripcion = document.getElementById('prescripcionRx').value.trim();
-      const indicaciones = document.getElementById('indicacionesRx').value.trim();
-      const tieneAntimicrobianos = document.getElementById('chkAntimicrobiano').checked;
-
-      if (!paciente || !prescripcion) {
-        alert("Complete al menos el nombre del paciente y la prescripción antes de enviar por WhatsApp.");
-        return;
-      }
-
-      let notaAntimicrobianoWA = "";
-      if (tieneAntimicrobianos) {
-        notaAntimicrobianoWA = `\n\n⚠️ *NOTA IMPORTANTE:* Esta receta contiene antimicrobianos. De acuerdo al MSP en su acuerdo ministerial, esta receta tiene máximo una vigencia de *3 días* a partir de su prescripción.`;
-      }
-
-      const textoWA = `*CONSULTORA LOORMEDIC S.A.*\n*RECETA MÉDICA DIGITAL*\n\n` +
-        `👤 *Paciente:* ${paciente}\n` +
-        `📅 *Fecha:* ${document.getElementById('fechaPrescripcion').value}\n\n` +
-        `💊 *Medicamento(s):*\n${prescripcion}\n\n` +
-        `📋 *Indicaciones:* ${indicaciones}` +
-        `${notaAntimicrobianoWA}\n\n` +
-        `👨‍⚕️ *Médico Prescriptor:* Dr. ${currentUser.nombre}\n` +
-        `📞 *Contacto:* ${document.getElementById('medicoCelular').value || 'N/A'}\n\n` +
-        `_Receta homologada conforme al AM 00031-2020 MSP_`;
-
-      const url = `https://wa.me/?text=${encodeURIComponent(textoWA)}`;
-      window.open(url, '_blank');
+      currentSavedPdfUrl = null;
     }
 
     function enviarReceta(event) {
       event.preventDefault();
 
-      let qrDataBase64 = obtenerQRBase64();
-      if (!qrDataBase64) {
-        alert("Debe validar su contraseña y generar el QR antes de guardar.");
-        return;
-      }
+      if (!validarFormularioCompleto()) return;
 
       const statusMsg = document.getElementById('statusMsg');
       const btnGuardar = document.getElementById('btnGuardar');
 
-      statusMsg.innerText = "⏳ Guardando receta en la base de datos...";
+      statusMsg.innerText = "⏳ Guardando receta en Google Sheets y Drive...";
       statusMsg.className = "text-xs font-medium text-amber-400";
       btnGuardar.disabled = true;
 
-      const payload = {
-        action: "saveReceta",
-        fechaPrescripcion: document.getElementById('fechaPrescripcion').value,
-        pacienteNombre: document.getElementById('pacienteNombre').value,
-        pacienteCedula: document.getElementById('pacienteCedula').value,
-        pacienteEdad: document.getElementById('pacienteEdad').value,
-        cieCodigo: document.getElementById('cieCodigo').value,
-        tipoDiag: document.getElementById('tipoDiag').value,
-        alergias: document.getElementById('pacienteAlergias').value,
-        prescripcion: document.getElementById('prescripcionRx').value,
-        indicaciones: document.getElementById('indicacionesRx').value,
-        antimicrobianos: document.getElementById('chkAntimicrobiano').checked ? "SÍ" : "NO",
-        medicoNombre: currentUser.nombre,
-        medicoCedula: currentUser.cedula,
-        medicoCelular: document.getElementById('medicoCelular').value || ""
-      };
-
-      fetch(GAS_WEBAPP_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      })
-      .then(() => {
+      guardarRecetaPromesa().then(pdfUrl => {
         statusMsg.innerText = "✅ ¡Receta médica guardada correctamente!";
         statusMsg.className = "text-xs font-medium text-emerald-400";
         btnGuardar.disabled = false;
-      })
-      .catch(err => {
+      }).catch(err => {
+        console.error(err);
         statusMsg.innerText = "❌ Error al guardar en el servidor.";
         statusMsg.className = "text-xs font-medium text-rose-400";
         btnGuardar.disabled = false;
       });
     }
 
-    // Cargar Historial con mejor manejo de respuesta y prevención de bloqueos
     function cargarHistorialRecetas() {
       const modal = document.getElementById('modalHistorial');
       const tabla = document.getElementById('tablaRecetas');
@@ -851,14 +928,10 @@
       const isADMIN = currentUser.cedula.toUpperCase() === "ADMIN";
       titulo.innerText = isADMIN ? "📋 Historial General (Todas las Recetas - ADMIN)" : `📋 Mis Recetas Guardadas (Dr. ${currentUser.nombre})`;
 
-      // Prevenir respuestas cacheadas y forzar seguimiento de redirección
       const url = `${GAS_WEBAPP_URL}?action=getRecetas&userCedula=${encodeURIComponent(currentUser.cedula)}&_t=${new Date().getTime()}`;
 
       fetch(url, { redirect: "follow" })
-        .then(res => {
-          if (!res.ok) throw new Error("Error en respuesta de red");
-          return res.json();
-        })
+        .then(res => res.json())
         .then(data => {
           if (!Array.isArray(data) || data.length === 0) {
             tabla.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-500">No hay recetas guardadas registradas.</td></tr>';
@@ -872,7 +945,7 @@
                 <td class="p-2 border-b border-slate-800/50 font-medium text-white">${r.paciente || '-'}</td>
                 <td class="p-2 border-b border-slate-800/50">${r.cedula || '-'}</td>
                 <td class="p-2 border-b border-slate-800/50">${r.cie || '-'}</td>
-                <td class="p-2 border-b border-slate-800/50 text-blue-400">${r.medico || '-'}</td>
+                <td class="p-2 border-b border-slate-800/50 text-blue-400">${r.medico || '-'} (${r.especialidad || 'Gral'})</td>
                 <td class="p-2 border-b border-slate-800/50 text-center">
                   ${r.pdfUrl ? `<a href="${r.pdfUrl}" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 rounded text-[10px] inline-flex items-center gap-1 font-semibold transition shadow">👁️ Ver PDF</a>` : '<span class="text-slate-500">-</span>'}
                 </td>
