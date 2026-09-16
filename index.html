@@ -704,7 +704,7 @@
       }
     }
 
-    // FUNCIONES DEL MODAL CIE-10/CIE-11
+    // FUNCIONES DEL MODAL CIE-10/CIE-11 CON TRADUCCIÓN MYMEMORY
     function abrirModalCie() {
       const diagVal = document.getElementById('pacienteDiagnostico').value.trim();
       const searchInput = document.getElementById('cieSearchInput');
@@ -729,7 +729,21 @@
       document.getElementById('modalCieSearch').classList.add('hidden');
     }
 
-    function ejecutarBusquedaCie() {
+    async function traducirTexto(texto, langPair = "en|es") {
+      if (!texto) return texto;
+      try {
+        const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(texto)}&langpair=${langPair}`);
+        const data = await res.json();
+        if (data && data.responseData && data.responseData.translatedText) {
+          return data.responseData.translatedText;
+        }
+      } catch (e) {
+        console.error("Error en traducción:", e);
+      }
+      return texto;
+    }
+
+    async function ejecutarBusquedaCie() {
       const query = document.getElementById('cieSearchInput').value.trim();
       const status = document.getElementById('cieResultsStatus');
       const container = document.getElementById('cieResultsContainer');
@@ -739,54 +753,62 @@
         return;
       }
 
-      status.innerText = "⏳ Buscando diagnósticos de coincidencia...";
+      status.innerText = "⏳ Buscando y traduciendo diagnósticos de coincidencia...";
       status.className = "text-xs font-medium text-amber-400";
       container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4 animate-pulse">Cargando base de datos médica...</p>';
 
-      const apiUrl = `https://clinicaltables.nlm.nih.gov/api/icd10cm/v3/search?terms=${encodeURIComponent(query)}&sf=code,name&maxList=12`;
+      try {
+        // Traducir consulta de Español a Inglés para mejorar precisión en ClinicalTables
+        const queryEn = await traducirTexto(query, "es|en");
 
-      fetch(apiUrl)
-        .then(res => res.json())
-        .then(data => {
-          const count = data[0];
-          const codes = data[1];
-          const details = data[3];
+        const apiUrl = `https://clinicaltables.nlm.nih.gov/api/icd10cm/v3/search?terms=${encodeURIComponent(queryEn)}&sf=code,name&maxList=12`;
+        const res = await fetch(apiUrl);
+        const data = await res.json();
 
-          if (count === 0 || !codes || codes.length === 0) {
-            status.innerText = "❌ No se encontraron códigos CIE para esa búsqueda.";
-            status.className = "text-xs font-medium text-rose-400";
-            container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Intente con palabras clave como "hipertension", "diabetes", "cefalea", "gastritis".</p>';
-            return;
-          }
+        const count = data[0];
+        const codes = data[1];
+        const details = data[3];
 
-          status.innerText = `✅ Se encontraron ${count} coincidencias. Seleccione una para autocompletar:`;
-          status.className = "text-xs font-medium text-emerald-400";
-
-          let html = '';
-          for (let i = 0; i < codes.length; i++) {
-            const code = codes[i];
-            const name = details[i] ? details[i][1] : 'Diagnóstico Clínico';
-            
-            html += `
-              <div onclick="seleccionarCodigoCie('${code}', '${escapeQuotes(name)}')" class="p-2 hover:bg-blue-900/40 rounded cursor-pointer border border-slate-800 flex justify-between items-center transition group">
-                <div>
-                  <span class="font-mono font-bold text-blue-400 group-hover:text-blue-300 text-xs">${code}</span>
-                  <p class="text-[11px] text-slate-300 group-hover:text-white leading-tight mt-0.5">${name}</p>
-                </div>
-                <button type="button" class="text-[10px] bg-blue-600/80 hover:bg-blue-500 text-white px-2 py-1 rounded transition ml-2 whitespace-nowrap">
-                  Seleccionar
-                </button>
-              </div>
-            `;
-          }
-          container.innerHTML = html;
-        })
-        .catch(err => {
-          console.error("CIE Search Error:", err);
-          status.innerText = "❌ Error al consultar el servicio de códigos CIE.";
+        if (count === 0 || !codes || codes.length === 0) {
+          status.innerText = "❌ No se encontraron códigos CIE para esa búsqueda.";
           status.className = "text-xs font-medium text-rose-400";
-          container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Verifique su conexión a internet.</p>';
-        });
+          container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Intente con palabras clave como "hipertension", "diabetes", "cefalea", "gastritis".</p>';
+          return;
+        }
+
+        status.innerText = `⏳ Traduciendo ${codes.length} resultados al español...`;
+
+        let html = '';
+        for (let i = 0; i < codes.length; i++) {
+          const code = codes[i];
+          const nameEn = details[i] ? details[i][1] : 'Diagnóstico Clínico';
+          
+          // Traducir descripción de resultado de Inglés a Español
+          const nameEs = await traducirTexto(nameEn, "en|es");
+          
+          html += `
+            <div onclick="seleccionarCodigoCie('${code}', '${escapeQuotes(nameEs)}')" class="p-2 hover:bg-blue-900/40 rounded cursor-pointer border border-slate-800 flex justify-between items-center transition group">
+              <div>
+                <span class="font-mono font-bold text-blue-400 group-hover:text-blue-300 text-xs">${code}</span>
+                <p class="text-[11px] text-slate-300 group-hover:text-white leading-tight mt-0.5">${nameEs}</p>
+              </div>
+              <button type="button" class="text-[10px] bg-blue-600/80 hover:bg-blue-500 text-white px-2 py-1 rounded transition ml-2 whitespace-nowrap">
+                Seleccionar
+              </button>
+            </div>
+          `;
+        }
+
+        status.innerText = `✅ Se encontraron ${count} coincidencias. Seleccione una para autocompletar:`;
+        status.className = "text-xs font-medium text-emerald-400";
+        container.innerHTML = html;
+
+      } catch (err) {
+        console.error("CIE Search Error:", err);
+        status.innerText = "❌ Error al consultar el servicio de códigos CIE.";
+        status.className = "text-xs font-medium text-rose-400";
+        container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Verifique su conexión a internet.</p>';
+      }
     }
 
     function escapeQuotes(str) {
