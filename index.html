@@ -687,8 +687,8 @@
       document.getElementById('welcomeDoctorText').innerText = tituloUsuario;
       document.getElementById('medicoNombre').value = user.nombre;
       document.getElementById('medicoEspecialidad').value = user.cargoEsp;
-      document.getElementById('medicoCedula').value = user.cedula;
-      document.getElementById('medicoCelular').value = user.celular || "";
+      document.getElementById('medicoCedula').value = String(user.cedula);
+      document.getElementById('medicoCelular').value = String(user.celular || "");
     }
 
     function cerrarSesion() {
@@ -704,7 +704,6 @@
       }
     }
 
-    // FUNCIONES DEL MODAL CIE-10/CIE-11 CON TRADUCCIÓN MYMEMORY
     function abrirModalCie() {
       const diagVal = document.getElementById('pacienteDiagnostico').value.trim();
       const searchInput = document.getElementById('cieSearchInput');
@@ -758,7 +757,6 @@
       container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4 animate-pulse">Cargando base de datos médica...</p>';
 
       try {
-        // Traducir consulta de Español a Inglés para mejorar precisión en ClinicalTables
         const queryEn = await traducirTexto(query, "es|en");
 
         const apiUrl = `https://clinicaltables.nlm.nih.gov/api/icd10cm/v3/search?terms=${encodeURIComponent(queryEn)}&sf=code,name&maxList=12`;
@@ -783,7 +781,6 @@
           const code = codes[i];
           const nameEn = details[i] ? details[i][1] : 'Diagnóstico Clínico';
           
-          // Traducir descripción de resultado de Inglés a Español
           const nameEs = await traducirTexto(nameEn, "en|es");
           
           html += `
@@ -858,7 +855,7 @@
     function generarFirmaQR() {
       const medico = currentUser.nombre;
       const especialidad = currentUser.cargoEsp;
-      const cedulaMedico = currentUser.cedula;
+      const cedulaMedico = String(currentUser.cedula);
       const fecha = document.getElementById('fechaPrescripcion').value;
       const tieneAntimicrobianos = document.getElementById('chkAntimicrobiano').checked ? "SI" : "NO";
 
@@ -893,7 +890,7 @@
           action: "saveReceta",
           fechaPrescripcion: document.getElementById('fechaPrescripcion').value,
           pacienteNombre: document.getElementById('pacienteNombre').value,
-          pacienteCedula: document.getElementById('pacienteCedula').value,
+          pacienteCedula: String(document.getElementById('pacienteCedula').value).trim(),
           pacienteEdad: document.getElementById('pacienteEdad').value,
           cieCodigo: document.getElementById('cieCodigo').value,
           pacienteDiagnostico: document.getElementById('pacienteDiagnostico').value,
@@ -904,8 +901,8 @@
           antimicrobianos: document.getElementById('chkAntimicrobiano').checked ? "SÍ" : "NO",
           medicoNombre: currentUser.nombre,
           medicoEspecialidad: currentUser.cargoEsp,
-          medicoCedula: currentUser.cedula,
-          medicoCelular: document.getElementById('medicoCelular').value || ""
+          medicoCedula: String(currentUser.cedula).trim(),
+          medicoCelular: String(document.getElementById('medicoCelular').value || "").trim()
         };
 
         fetch(GAS_WEBAPP_URL, {
@@ -926,7 +923,6 @@
       });
     }
 
-    // IMPRIMIR PDF DE DRIVE DIRECTAMENTE
     async function imprimirPDFLocal() {
       if (!validarFormularioCompleto()) return;
 
@@ -942,7 +938,6 @@
         statusMsg.innerText = "✅ Abriendo PDF para impresión...";
         statusMsg.className = "text-xs font-medium text-emerald-400";
 
-        // Abrir PDF de Drive e invocar la ventana de impresión nativa
         const printWindow = window.open(pdfUrl, '_blank');
         if (printWindow) {
           printWindow.focus();
@@ -975,7 +970,6 @@
       return true;
     }
 
-    // ENVIAR POR WHATSAPP CON TELÉFONO DE PACIENTE Y LINK DE PDF DRIVE
     async function enviarPorWhatsAppDirecto() {
       if (!validarFormularioCompleto()) return;
 
