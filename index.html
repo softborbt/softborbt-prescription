@@ -3,9 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Receta Médica Digital - AM 00031-2020</title>
+  <title>Recetario Médico Digital - Consultora Loormedic S.A.</title>
+  
+  <!-- Configuración PWA / Web App Icon -->
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/softborbt/softborbt-clientes/refs/heads/main/loormedic1x1.png">
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/softborbt/softborbt-clientes/refs/heads/main/loormedic1x1.png">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Loormedic Recetas">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  
   <style>
     .watermark {
       background-image: url('https://raw.githubusercontent.com/softborbt/softborbt-clientes/refs/heads/main/logo-loormedic.png');
@@ -14,28 +23,22 @@
       background-size: 380px auto;
     }
 
-    /* ESTILOS DE IMPRESIÓN LOCAL EXACTA A PDF DRIVE (1 HOJA A4) */
     @media print {
       @page {
         size: A4 portrait;
-        margin: 12mm 15mm 12mm 15mm;
+        margin: 10mm 12mm;
       }
-      
       body {
         background-color: #ffffff !important;
-        color: #1e293b !important;
-        font-family: 'Helvetica Neue', Arial, sans-serif !important;
-        font-size: 10pt !important;
+        color: #0f172a !important;
+        font-family: Arial, sans-serif !important;
+        font-size: 9pt !important;
         padding: 0 !important;
         margin: 0 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
       }
-
       .no-print, .no-print * {
         display: none !important;
       }
-
       .main-card {
         background: transparent !important;
         border: none !important;
@@ -43,283 +46,604 @@
         padding: 0 !important;
         max-width: 100% !important;
       }
-
       .watermark {
         opacity: 0.08 !important;
-        background-size: 400px auto !important;
+        background-size: 350px auto !important;
       }
-
-      .header-title {
-        color: #1e3a8a !important;
-      }
-
       .section-block {
         background-color: #ffffff !important;
         border: 1px solid #cbd5e1 !important;
-        padding: 8px 12px !important;
-        margin-bottom: 12px !important;
+        padding: 6px 10px !important;
+        margin-bottom: 8px !important;
         border-radius: 4px !important;
-        break-inside: avoid;
       }
-
-      .section-title {
-        color: #0f172a !important;
-        border-bottom: 1px solid #e2e8f0 !important;
-        font-size: 9pt !important;
-        font-weight: bold !important;
-        text-transform: uppercase !important;
-      }
-
-      /* Convertir inputs a texto plano para vista de impresión limpia */
       input, select, textarea {
         background: transparent !important;
         border: none !important;
-        color: #1e293b !important;
-        padding: 0 !important;
-        box-shadow: none !important;
-        resize: none !important;
-        font-size: 10pt !important;
-        outline: none !important;
-      }
-
-      textarea {
-        background-color: #f8fafc !important;
-        border: 1px solid #e2e8f0 !important;
-        padding: 6px !important;
-        min-height: 45px !important;
-      }
-
-      .text-slate-400, .text-slate-300, .text-slate-200 {
-        color: #334155 !important;
-      }
-      
-      .text-white {
         color: #0f172a !important;
+        padding: 0 !important;
+        outline: none !important;
       }
     }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen p-2 md:p-6">
-  
-  <div class="main-card max-w-4xl mx-auto bg-slate-800 shadow-2xl rounded-xl p-6 md:p-8 border border-slate-700 relative overflow-hidden">
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
+
+  <!-- ==================== CONTENEDOR DE LOGIN (PANEL DIVIDIDO) ==================== -->
+  <div id="loginSection" class="min-h-screen flex flex-col md:flex-row">
     
-    <!-- Marca de agua -->
-    <div class="absolute inset-0 watermark opacity-5 pointer-events-none z-0"></div>
-
-    <div class="relative z-10">
+    <!-- Panel Izquierdo: Branding Loormedic -->
+    <div class="md:w-1/2 bg-slate-900 flex flex-col justify-between p-8 border-b md:border-b-0 md:border-r border-slate-800 relative overflow-hidden">
+      <div class="absolute inset-0 watermark opacity-10"></div>
       
-      <!-- Encabezado -->
-      <div class="flex flex-col sm:flex-row justify-between items-center border-b border-slate-700 pb-4 mb-5 gap-4">
-        <div class="flex items-center space-x-4">
-          <img src="https://raw.githubusercontent.com/softborbt/softborbt-clientes/refs/heads/main/logo-loormedic.png" 
-               alt="Consultora Loormedic Logo" 
-               class="h-14 w-auto object-contain bg-white/10 p-1 rounded">
+      <div class="relative z-10 flex items-center space-x-3">
+        <img src="https://raw.githubusercontent.com/softborbt/softborbt-clientes/refs/heads/main/loormedic1x1.png" alt="Loormedic Logo" class="h-12 w-12 rounded-lg object-contain bg-white p-1">
+        <div>
+          <h2 class="text-lg font-bold text-white tracking-wide">CONSULTORA LOORMEDIC S.A.</h2>
+          <p class="text-xs text-blue-400 font-medium">Gestión Médica Institucional</p>
+        </div>
+      </div>
+
+      <div class="relative z-10 my-12">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-white leading-tight mb-4">
+          Plataforma Digital de Prescripción Médica
+        </h1>
+        <p class="text-slate-400 text-sm leading-relaxed max-w-md">
+          Sistema homologado para la emisión y firma digital de recetas conforme al **Acuerdo Ministerial 00031-2020** del Ministerio de Salud Pública del Ecuador.
+        </p>
+      </div>
+
+      <div class="relative z-10 text-xs text-slate-500">
+        &copy; 2026 Consultora Loormedic S.A. — Todos los derechos reservados.
+      </div>
+    </div>
+
+    <!-- Panel Derecho: Formulario de Autenticación -->
+    <div class="md:w-1/2 bg-slate-950 flex items-center justify-center p-6 md:p-12">
+      <div class="w-full max-w-md space-y-6">
+        
+        <div class="text-center md:text-left">
+          <div class="inline-block md:hidden mb-4">
+            <img src="https://raw.githubusercontent.com/softborbt/softborbt-clientes/refs/heads/main/loormedic1x1.png" alt="Loormedic Logo" class="h-16 w-16 mx-auto rounded-xl bg-white p-1 shadow-lg">
+          </div>
+          <h2 class="text-2xl font-bold text-white">Bienvenido a Consultora Loormedic S.A.</h2>
+          <p class="text-xs text-slate-400 mt-1">Ingrese su Cédula y Contraseña para acceder al módulo de recetas.</p>
+        </div>
+
+        <form onsubmit="procesarLogin(event)" class="space-y-4">
           <div>
-            <h1 class="header-title text-xl md:text-2xl font-bold text-white leading-tight">CONSULTORA LOORMEDIC S.A.</h1>
-            <p class="text-xs text-slate-400 font-medium">Receta Médica Digital — AM 00031-2020</p>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Cédula / Usuario</label>
+            <input type="text" id="loginCedula" required placeholder="Ingrese su número de cédula" class="w-full p-3 rounded-lg bg-slate-900 border border-slate-800 text-white text-sm focus:outline-none focus:border-blue-500 transition">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Contraseña</label>
+            <div class="relative">
+              <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full p-3 pr-10 rounded-lg bg-slate-900 border border-slate-800 text-white text-sm focus:outline-none focus:border-blue-500 transition">
+              <button type="button" onclick="toggleEye('loginPassword', 'eyeIconLogin')" class="absolute right-3 top-3 text-slate-400 hover:text-white">
+                <span id="eyeIconLogin">👁️</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-xs">
+            <label class="flex items-center text-slate-400 cursor-pointer">
+              <input type="checkbox" id="chkRecordar" class="mr-2 rounded border-slate-800 text-blue-600 focus:ring-0 bg-slate-900">
+              Recordar usuario
+            </label>
+          </div>
+
+          <p id="loginError" class="text-xs font-medium text-rose-500 hidden"></p>
+
+          <button type="submit" id="btnLogin" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-lg text-sm shadow-lg shadow-blue-600/20 transition flex items-center justify-center space-x-2">
+            <span>Iniciar Sesión</span>
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: CAMBIO DE CONTRASEÑA OBLIGATORIO ==================== -->
+  <div id="modalFirstLogin" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+      <div class="text-center">
+        <div class="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-3 font-bold text-xl">⚠️</div>
+        <h3 class="text-lg font-bold text-white">Actualización de Contraseña Requerida</h3>
+      </div>
+      
+      <p class="text-xs text-slate-300 bg-slate-800/80 p-3 rounded-lg border border-slate-700 leading-relaxed">
+        Esta contraseña será válida exclusivamente para firmar los recetarios conforme al <strong>acuerdo ministerial 00031-2020</strong> para la empresa <strong>Loormedic S.A.</strong>, su contraseña es intransferible y solo podrá usar el sistema mientras la empresa le otorgue acceso.
+      </p>
+
+      <form onsubmit="guardarNuevaPassword(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Nueva Contraseña</label>
+          <div class="relative">
+            <input type="password" id="newPass1" required class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded text-sm text-white focus:outline-none focus:border-blue-500">
+            <button type="button" onclick="toggleEye('newPass1', 'eyeIconP1')" class="absolute right-3 top-2.5 text-slate-400">
+              <span id="eyeIconP1">👁️</span>
+            </button>
           </div>
         </div>
-        
-        <div class="text-right text-xs text-slate-400 leading-tight hidden sm:block">
-          <div>info@loormedic.com</div>
-          <div>0986566332</div>
-          <div>Cdla. Vernaza Norte Mz7, Villa 19</div>
-          <div>Guayaquil - Ecuador</div>
-        </div>
-      </div>
 
-      <!-- Barra de acciones superior -->
-      <div class="no-print flex flex-wrap justify-between items-center bg-slate-900/80 p-3 rounded-lg border border-slate-700 mb-4 gap-2">
-        <div class="flex flex-wrap gap-2">
-          <button type="button" onclick="imprimirFormatoEnBlanco()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded shadow transition">
-            📄 Imprimir Formato en Blanco
-          </button>
-          <button type="button" onclick="cargarHistorialRecetas()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-3 py-2 rounded shadow transition">
-            📋 Ver Recetas
-          </button>
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Confirmar Nueva Contraseña</label>
+          <div class="relative">
+            <input type="password" id="newPass2" required class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded text-sm text-white focus:outline-none focus:border-blue-500">
+            <button type="button" onclick="toggleEye('newPass2', 'eyeIconP2')" class="absolute right-3 top-2.5 text-slate-400">
+              <span id="eyeIconP2">👁️</span>
+            </button>
+          </div>
         </div>
-        <button type="button" onclick="limpiarFormulario()" class="bg-rose-700 hover:bg-rose-800 text-white text-xs font-semibold px-3 py-2 rounded shadow transition">
-          🧹 Limpiar
+
+        <p id="passError" class="text-xs font-medium text-rose-500 hidden"></p>
+
+        <button type="submit" id="btnSavePass" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded text-xs shadow transition">
+          Actualizar y Continuar
         </button>
-      </div>
-
-      <form id="recetaForm" onsubmit="enviarReceta(event)" class="space-y-4">
-        
-        <!-- Sección 1: Datos del Paciente -->
-        <div class="section-block bg-slate-900/60 p-4 rounded-lg border border-slate-700">
-          <h2 class="section-title font-semibold text-slate-200 text-sm mb-2 border-b border-slate-700 pb-1 flex items-center justify-between">
-            <span>1. DATOS DEL PACIENTE</span>
-            <span class="text-xs font-normal text-slate-400 no-print">Norma MSP Ecuador</span>
-          </h2>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-            <div class="md:col-span-2">
-              <label class="block text-xs font-medium text-slate-400">Nombres y Apellidos Completos</label>
-              <input type="text" id="pacienteNombre" placeholder="Ej: Zambrano Suarez Pepito Juan" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-slate-400">Cédula / Pasaporte</label>
-              <input type="text" id="pacienteCedula" placeholder="Ej: 099999999" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-slate-400">Edad</label>
-              <input type="number" id="pacienteEdad" placeholder="Ej: 28" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-slate-400">Código CIE-10 / CIE-11</label>
-              <input type="text" id="cieCodigo" placeholder="Ej: E78.2" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-slate-400">Tipo de Diagnóstico</label>
-              <select id="tipoDiag" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500">
-                <option value="Definitivo" selected>Definitivo</option>
-                <option value="Presuntivo">Presuntivo</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- Sección 2: Prescripción Médica -->
-        <div class="section-block bg-slate-900/60 p-4 rounded-lg border border-slate-700">
-          <h2 class="section-title font-semibold text-slate-200 text-sm mb-2 border-b border-slate-700 pb-1">2. PRESCRIPCIÓN MÉDICA (Rx) E INDICACIONES</h2>
-          <div class="space-y-3">
-            <div>
-              <label class="block text-xs font-medium text-slate-400">Medicamentos y Dosis</label>
-              <textarea id="prescripcionRx" rows="2" placeholder="Detalle medicamentos..." class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white font-mono text-xs focus:outline-none focus:border-blue-500" required></textarea>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-slate-400">Indicaciones de Uso / Posología</label>
-              <textarea id="indicacionesRx" rows="2" placeholder="Indicaciones del tratamiento..." class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white text-xs focus:outline-none focus:border-blue-500" required></textarea>
-            </div>
-          </div>
-        </div>
-
-        <!-- Sección 3: Datos del Especialista -->
-        <div class="section-block bg-slate-900/60 p-4 rounded-lg border border-slate-700">
-          <h2 class="section-title font-semibold text-slate-200 text-sm mb-2 border-b border-slate-700 pb-1">3. DATOS DEL ESPECIALISTA PRESCRIPTOR</h2>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-            <div>
-              <label class="block text-xs font-medium text-slate-400">Nombre del Médico</label>
-              <input type="text" id="medicoNombre" placeholder="Ej: Dr. Pepito Juan Zambrano Suarez" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-slate-400">Especialidad</label>
-              <input type="text" id="medicoEspecialidad" placeholder="Ej: Medicina General" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-slate-400">Cédula / Reg. MSP</label>
-              <input type="text" id="medicoCedula" placeholder="Ej: 099999999" class="w-full mt-1 p-2 border border-slate-700 rounded bg-slate-800 text-white focus:outline-none focus:border-blue-500" required>
-            </div>
-          </div>
-        </div>
-
-        <!-- Botones y Bloque de Firma -->
-        <div class="section-block flex flex-col md:flex-row items-center justify-between bg-slate-900/80 p-4 rounded-lg border border-slate-700 gap-4">
-          <div class="no-print space-y-2 w-full md:w-auto">
-            <div class="flex flex-wrap gap-2">
-              <button type="button" onclick="generarFirmaQR()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded text-xs shadow transition">
-                🖋️ Generar Firma QR
-              </button>
-              <button type="submit" id="btnGuardar" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-3 rounded text-xs shadow transition">
-                💾 Guardar en Drive & Sheet
-              </button>
-              <button type="button" onclick="imprimirLocal()" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-3 rounded text-xs shadow transition">
-                🖨️ Imprimir Local
-              </button>
-            </div>
-            <p id="statusMsg" class="text-xs font-medium text-slate-400"></p>
-          </div>
-
-          <!-- Firma Digital y QR -->
-          <div class="flex items-center space-x-4">
-            <div id="qrContainer" class="p-1 bg-white border border-slate-700 rounded shadow-sm w-[95px] h-[95px] flex items-center justify-center">
-              <span class="text-[9px] text-slate-500 text-center no-print">Presione 'Generar Firma'</span>
-            </div>
-            <div id="firmaTexto" class="text-xs text-slate-300 font-mono hidden border-l pl-3 border-slate-700">
-              <p class="font-bold border-b border-slate-700 pb-0.5 text-blue-400">FIRMADO DIGITALMENTE</p>
-              <p id="txtMedico" class="font-semibold"></p>
-              <p id="txtEsp" class="text-slate-400"></p>
-              <p id="txtFecha" class="text-[10px] text-slate-500 mt-1"></p>
-            </div>
-          </div>
-        </div>
-
       </form>
+    </div>
+  </div>
 
-      <!-- Modal Recetas -->
-      <div id="modalHistorial" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
-        <div class="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-3xl max-h-[80vh] flex flex-col p-6 shadow-2xl">
-          <div class="flex justify-between items-center border-b border-slate-700 pb-3 mb-4">
-            <h3 class="text-lg font-bold text-white flex items-center gap-2">📋 Historial de Recetas Guardadas</h3>
-            <button onclick="cerrarModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
-          </div>
-          <div class="overflow-y-auto flex-1">
-            <table class="w-full text-left text-xs text-slate-300">
-              <thead class="bg-slate-900/80 text-slate-400 border-b border-slate-700">
-                <tr>
-                  <th class="p-2">Fecha</th>
-                  <th class="p-2">Paciente</th>
-                  <th class="p-2">Cédula</th>
-                  <th class="p-2">CIE-10</th>
-                  <th class="p-2 text-center">PDF Drive</th>
-                </tr>
-              </thead>
-              <tbody id="tablaRecetas" class="divide-y divide-slate-700">
-                <tr><td colspan="5" class="p-4 text-center text-slate-500">Cargando recetas...</td></tr>
-              </tbody>
-            </table>
-          </div>
+  <!-- ==================== MODAL: FIRMA DIGITAL CON CONTRASEÑA ==================== -->
+  <div id="modalConfirmFirma" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 max-w-sm w-full space-y-4 shadow-2xl">
+      <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">Validar Firma Digital</h3>
+      <p class="text-xs text-slate-400">Ingrese su contraseña de portal para confirmar la validez legal de este recetario.</p>
+      
+      <div>
+        <label class="block text-xs font-medium text-slate-400 mb-1">Contraseña</label>
+        <div class="relative">
+          <input type="password" id="confirmFirmaPass" class="w-full p-2 bg-slate-800 border border-slate-700 rounded text-sm text-white focus:outline-none focus:border-blue-500">
+          <button type="button" onclick="toggleEye('confirmFirmaPass', 'eyeIconCF')" class="absolute right-3 top-2 text-slate-400 text-xs">
+            <span id="eyeIconCF">👁️</span>
+          </button>
         </div>
       </div>
 
+      <p id="firmaError" class="text-xs font-medium text-rose-500 hidden"></p>
+
+      <div class="flex justify-end space-x-2">
+        <button type="button" onclick="cerrarFirmaModal()" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-xs text-slate-300">Cancelar</button>
+        <button type="button" onclick="validarYGenerarQR()" class="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-xs text-white font-semibold">Validar y Firmar</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==================== SISTEMA DE RECETA (PANEL PRINCIPAL) ==================== -->
+  <div id="appSection" class="hidden min-h-screen p-2 md:p-6">
+    <div class="main-card max-w-4xl mx-auto bg-slate-900 shadow-2xl rounded-xl p-6 md:p-8 border border-slate-800 relative overflow-hidden">
+      
+      <div class="absolute inset-0 watermark opacity-5 pointer-events-none z-0"></div>
+
+      <div class="relative z-10">
+        
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-center border-b border-slate-800 pb-4 mb-4 gap-4">
+          <div class="flex items-center space-x-4">
+            <img src="https://raw.githubusercontent.com/softborbt/softborbt-clientes/refs/heads/main/logo-loormedic.png" alt="Consultora Loormedic Logo" class="h-14 w-auto object-contain bg-white/10 p-1 rounded">
+            <div>
+              <h1 class="text-xl md:text-2xl font-bold text-white leading-tight">CONSULTORA LOORMEDIC S.A.</h1>
+              <p class="text-xs text-slate-400 font-medium">Receta Médica Digital — AM 00031-2020</p>
+            </div>
+          </div>
+          
+          <div class="text-right text-xs text-slate-400 leading-tight hidden sm:block">
+            <div>info@loormedic.com</div>
+            <div>0986566332</div>
+            <div>Cdla. Vernaza Norte Mz7, Villa 19</div>
+            <div>Guayaquil - Ecuador</div>
+          </div>
+        </div>
+
+        <!-- Mensaje de Bienvenida Profesional -->
+        <div class="no-print bg-slate-800/80 border border-slate-700/60 rounded-lg p-3 mb-4 flex justify-between items-center">
+          <div class="text-xs text-slate-300">
+            <span class="font-semibold text-blue-400" id="welcomeDoctorText">Bienvenido Dr.</span>
+            <span class="block text-[11px] text-slate-400">Sesión activa y autorizada para emisión de recetarios institucionales.</span>
+          </div>
+          <button onclick="cerrarSesion()" class="bg-slate-700 hover:bg-slate-600 text-white text-[11px] px-3 py-1.5 rounded transition">
+            🔒 Cerrar Sesión
+          </button>
+        </div>
+
+        <!-- Acciones Rápidas -->
+        <div class="no-print flex flex-wrap justify-between items-center bg-slate-950 p-3 rounded-lg border border-slate-800 mb-4 gap-2">
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="imprimirFormatoEnBlanco()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded shadow transition">
+              📄 Imprimir Formato en Blanco
+            </button>
+            <button type="button" onclick="cargarHistorialRecetas()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-3 py-2 rounded shadow transition">
+              📋 Ver Recetas Guardadas
+            </button>
+          </div>
+          <button type="button" onclick="limpiarFormulario()" class="bg-rose-700 hover:bg-rose-800 text-white text-xs font-semibold px-3 py-2 rounded shadow transition">
+            🧹 Limpiar
+          </button>
+        </div>
+
+        <form id="recetaForm" onsubmit="enviarReceta(event)" class="space-y-4">
+          
+          <!-- Sección 1: Datos del Paciente -->
+          <div class="section-block bg-slate-950/60 p-4 rounded-lg border border-slate-800">
+            <h2 class="font-semibold text-slate-200 text-sm mb-3 border-b border-slate-800 pb-1 flex items-center justify-between">
+              <span>1. DATOS DEL PACIENTE Y PRESCRIPCIÓN</span>
+              <span class="text-xs font-normal text-slate-400 no-print">Norma MSP Ecuador</span>
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-sm">
+              
+              <div>
+                <label class="block text-xs font-medium text-slate-400">Fecha Prescripción</label>
+                <input type="text" id="fechaPrescripcion" readonly class="w-full mt-1 p-2 border border-slate-800 rounded bg-slate-900 text-blue-400 font-semibold text-xs cursor-not-allowed">
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="block text-xs font-medium text-slate-400">Nombres y Apellidos Completos</label>
+                <input type="text" id="pacienteNombre" placeholder="Ej: JOHN BORBOR" class="w-full mt-1 p-2 border border-slate-800 rounded bg-slate-900 text-white focus:outline-none focus:border-blue-500" required>
+              </div>
+
+              <div>
+                <label class="block text-xs font-medium text-slate-400">Cédula / Pasaporte</label>
+                <input type="text" id="pacienteCedula" placeholder="Ej: 2400249096" class="w-full mt-1 p-2 border border-slate-800 rounded bg-slate-900 text-white focus:outline-none focus:border-blue-500" required>
+              </div>
+
+              <div>
+                <label class="block text-xs font-medium text-slate-400">Edad (Años)</label>
+                <input type="number" id="pacienteEdad" oninput="validarEdadPaciente(this.value)" placeholder="Ej: 28" class="w-full mt-1 p-2 border border-slate-800 rounded bg-slate-900 text-white focus:outline-none focus:border-blue-500" required>
+                <p id="alertaEdad" class="text-[10px] text-amber-400 font-semibold mt-1 hidden">⚠️ Para menores de 5 años, especifique la edad en AÑOS y MESES en las observaciones.</p>
+              </div>
+
+              <div>
+                <label class="block text-xs font-medium text-slate-400">Código CIE-10 / CIE-11</label>
+                <input type="text" id="cieCodigo" placeholder="Ej: E78.2" class="w-full mt-1 p-2 border border-slate-800 rounded bg-slate-900 text-white focus:outline-none focus:border-blue-500" required>
+              </div>
+
+              <div>
+                <label class="block text-xs font-medium text-slate-400">Tipo de Diagnóstico</label>
+                <select id="tipoDiag" class="w-full mt-1 p-2 border border-slate-800 rounded bg-slate-900 text-white focus:outline-none focus:border-blue-500">
+                  <option value="Definitivo" selected>Definitivo</option>
+                  <option value="Presuntivo">Presuntivo</option>
+                </select>
+              </div>
+
+              <div class="md:col-span-4">
+                <label class="block text-xs font-medium text-amber-400">Antecedentes de Alergias</label>
+                <input type="text" id="pacienteAlergias" placeholder="Ej: Alérgico a la Penicilina / Ninguna conocida" class="w-full mt-1 p-2 border border-amber-900/50 rounded bg-slate-900 text-white focus:outline-none focus:border-amber-500">
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Sección 2: Prescripción Médica Normativa -->
+          <div class="section-block bg-slate-950/60 p-4 rounded-lg border border-slate-800">
+            <h2 class="font-semibold text-slate-200 text-sm mb-2 border-b border-slate-800 pb-1">
+              2. PRESCRIPCIÓN MÉDICA (Rx) E INDICACIONES
+            </h2>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">
+                  Detalle del Medicamento <span class="text-blue-400">(Obligatorio: DCI, Forma Farmacéutica, Concentración, Vía, Cantidad en números/letras)</span>
+                </label>
+                <textarea id="prescripcionRx" rows="3" placeholder="1. Paracetamol (DCI) - Comprimido - 500mg - Vía Oral - Cantidad: 10 (diez)&#10;2. Amoxicilina (DCI) - Cápsula - 500mg - Vía Oral - Cantidad: 21 (veintiuno)" class="w-full p-2 border border-slate-800 rounded bg-slate-900 text-white font-mono text-xs focus:outline-none focus:border-blue-500" required></textarea>
+              </div>
+
+              <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">
+                  Dosis / Posología, Frecuencia y Duración del Tratamiento
+                </label>
+                <textarea id="indicacionesRx" rows="2" placeholder="Tomar 1 comprimido cada 8 horas por 5 días." class="w-full p-2 border border-slate-800 rounded bg-slate-900 text-white text-xs focus:outline-none focus:border-blue-500" required></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sección 3: Datos del Especialista (Auto-cargados) -->
+          <div class="section-block bg-slate-950/60 p-4 rounded-lg border border-slate-800">
+            <h2 class="font-semibold text-slate-200 text-sm mb-2 border-b border-slate-800 pb-1">3. DATOS DEL ESPECIALISTA PRESCRIPTOR</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+              <div>
+                <label class="block text-xs font-medium text-slate-400">Nombre del Médico</label>
+                <input type="text" id="medicoNombre" readonly class="w-full mt-1 p-2 border border-slate-800 rounded bg-slate-900/80 text-slate-300 font-semibold cursor-not-allowed">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-400">Especialidad</label>
+                <input type="text" id="medicoEspecialidad" readonly class="w-full mt-1 p-2 border border-slate-800 rounded bg-slate-900/80 text-slate-300 font-semibold cursor-not-allowed">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-400">Cédula / Reg. MSP</label>
+                <input type="text" id="medicoCedula" readonly class="w-full mt-1 p-2 border border-slate-800 rounded bg-slate-900/80 text-slate-300 font-semibold cursor-not-allowed">
+              </div>
+            </div>
+          </div>
+
+          <!-- Botones de Acción y Bloque de Firma -->
+          <div class="section-block flex flex-col md:flex-row items-center justify-between bg-slate-950 p-4 rounded-lg border border-slate-800 gap-4">
+            <div class="no-print space-y-2 w-full md:w-auto">
+              <div class="flex flex-wrap gap-2">
+                <button type="button" onclick="abrirModalFirma()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded text-xs shadow transition">
+                  🖋️ Generar Firma QR
+                </button>
+                <button type="submit" id="btnGuardar" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-3 rounded text-xs shadow transition">
+                  💾 Guardar en Drive & Sheet
+                </button>
+                <button type="button" onclick="imprimirLocal()" class="bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2 px-3 rounded text-xs shadow transition">
+                  🖨️ Imprimir Local
+                </button>
+              </div>
+              <p id="statusMsg" class="text-xs font-medium text-slate-400"></p>
+            </div>
+
+            <!-- Firma y QR -->
+            <div class="flex items-center space-x-4">
+              <div id="qrContainer" class="p-1 bg-white border border-slate-800 rounded shadow-sm w-[95px] h-[95px] flex items-center justify-center">
+                <span class="text-[9px] text-slate-500 text-center no-print">Presione 'Generar Firma'</span>
+              </div>
+              <div id="firmaTexto" class="text-xs text-slate-300 font-mono hidden border-l pl-3 border-slate-800">
+                <p class="font-bold border-b border-slate-800 pb-0.5 text-blue-400">FIRMADO DIGITALMENTE</p>
+                <p id="txtMedico" class="font-semibold"></p>
+                <p id="txtEsp" class="text-slate-400"></p>
+                <p id="txtFecha" class="text-[10px] text-slate-500 mt-1"></p>
+              </div>
+            </div>
+          </div>
+
+        </form>
+
+        <!-- Modal Historial Recetas -->
+        <div id="modalHistorial" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
+          <div class="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-3xl max-h-[80vh] flex flex-col p-6 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">📋 Historial de Recetas Guardadas</h3>
+              <button onclick="cerrarModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+            </div>
+            <div class="overflow-y-auto flex-1">
+              <table class="w-full text-left text-xs text-slate-300">
+                <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                  <tr>
+                    <th class="p-2">Fecha</th>
+                    <th class="p-2">Paciente</th>
+                    <th class="p-2">Cédula</th>
+                    <th class="p-2">CIE-10</th>
+                    <th class="p-2 text-center">PDF Drive</th>
+                  </tr>
+                </thead>
+                <tbody id="tablaRecetas" class="divide-y divide-slate-800">
+                  <tr><td colspan="5" class="p-4 text-center text-slate-500">Cargando recetas...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 
   <script>
     const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyHF_ZdPl3-qLfIe2_RgIZQe_Y4oHVUlqlMPTnAYufvjYN5nlDsRo25RMENgOnq8Rjt9A/exec";
 
-    function generarFirmaQR() {
-      const medico = document.getElementById('medicoNombre').value.trim();
-      const especialidad = document.getElementById('medicoEspecialidad').value.trim();
-      const cedulaMedico = document.getElementById('medicoCedula').value.trim();
-      const fecha = new Date().toLocaleDateString('es-EC');
-      const statusMsg = document.getElementById('statusMsg');
+    let currentUser = null;
+    let listResponsables = [];
 
-      if (!medico || !especialidad || !cedulaMedico) {
-        alert("Por favor complete todos los datos del especialista: Nombre, Especialidad y Cédula/Reg. MSP.");
-        statusMsg.innerText = "❌ Complete los datos del especialista para generar la firma.";
-        statusMsg.className = "text-xs font-medium text-rose-400";
-        return false;
+    // Cargar datos al iniciar
+    window.addEventListener('DOMContentLoaded', () => {
+      // Recordar usuario en Login
+      const savedCedula = localStorage.getItem('rememberedCedula');
+      if (savedCedula) {
+        document.getElementById('loginCedula').value = savedCedula;
+        document.getElementById('chkRecordar').checked = true;
       }
+
+      // Establecer Fecha por defecto
+      const hoy = new Date().toLocaleDateString('es-EC');
+      document.getElementById('fechaPrescripcion').value = hoy;
+    });
+
+    function toggleEye(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (input.type === "password") {
+        input.type = "text";
+        icon.innerText = "🙈";
+      } else {
+        input.type = "password";
+        icon.innerText = "👁️";
+      }
+    }
+
+    function procesarLogin(e) {
+      e.preventDefault();
+      const cedulaInput = document.getElementById('loginCedula').value.trim();
+      const passInput = document.getElementById('loginPassword').value.trim();
+      const errBox = document.getElementById('loginError');
+      const btn = document.getElementById('btnLogin');
+
+      errBox.classList.add('hidden');
+      btn.disabled = true;
+      btn.innerText = "Validando...";
+
+      fetch(`${GAS_WEBAPP_URL}?action=getResponsables`)
+        .then(res => res.json())
+        .then(responsables => {
+          listResponsables = responsables;
+          const user = responsables.find(r => r.cedula === cedulaInput && r.password === passInput);
+
+          if (!user) {
+            showLoginError("⚠️ Cédula o contraseña incorrecta.");
+            btn.disabled = false;
+            btn.innerText = "Iniciar Sesión";
+            return;
+          }
+
+          // Validar estado de acceso
+          if (user.acceso !== "ACTIVADO") {
+            showLoginError("⛔ Su cuenta se encuentra INACTIVA. Por favor comuníquese con el Departamento de RRHH de Loormedic S.A.");
+            btn.disabled = false;
+            btn.innerText = "Iniciar Sesión";
+            return;
+          }
+
+          // Validar si requiere actualizar contraseña por primera vez
+          if (user.actualizacion === "PENDIENTE") {
+            currentUser = user;
+            document.getElementById('modalFirstLogin').classList.remove('hidden');
+            btn.disabled = false;
+            btn.innerText = "Iniciar Sesión";
+            return;
+          }
+
+          if (user.actualizacion !== "ACTUALIZADO") {
+            showLoginError("⛔ Su usuario no tiene autorización activa para ingresar.");
+            btn.disabled = false;
+            btn.innerText = "Iniciar Sesión";
+            return;
+          }
+
+          // Recordar usuario si seleccionó la opción
+          if (document.getElementById('chkRecordar').checked) {
+            localStorage.setItem('rememberedCedula', cedulaInput);
+          } else {
+            localStorage.removeItem('rememberedCedula');
+          }
+
+          // Login Exitoso
+          iniciarSesionEnSistema(user);
+        })
+        .catch(err => {
+          showLoginError("❌ Error de conexión al servidor.");
+          btn.disabled = false;
+          btn.innerText = "Iniciar Sesión";
+        });
+    }
+
+    function showLoginError(msg) {
+      const errBox = document.getElementById('loginError');
+      errBox.innerText = msg;
+      errBox.classList.remove('hidden');
+    }
+
+    function guardarNuevaPassword(e) {
+      e.preventDefault();
+      const p1 = document.getElementById('newPass1').value.trim();
+      const p2 = document.getElementById('newPass2').value.trim();
+      const errBox = document.getElementById('passError');
+
+      if (p1 !== p2) {
+        errBox.innerText = "❌ Las contraseñas no coinciden.";
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      if (p1.length < 4) {
+        errBox.innerText = "❌ La contraseña debe tener al menos 4 caracteres.";
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      const btn = document.getElementById('btnSavePass');
+      btn.disabled = true;
+      btn.innerText = "Guardando...";
+
+      fetch(GAS_WEBAPP_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "updatePassword",
+          cedula: currentUser.cedula,
+          newPassword: p1
+        })
+      }).then(() => {
+        alert("¡Contraseña actualizada con éxito! Por favor ingrese con su nueva clave.");
+        location.reload();
+      }).catch(err => {
+        alert("Error al actualizar la contraseña.");
+        btn.disabled = false;
+      });
+    }
+
+    function iniciarSesionEnSistema(user) {
+      currentUser = user;
+      
+      // Ocultar Login y mostrar App
+      document.getElementById('loginSection').classList.add('hidden');
+      document.getElementById('appSection').classList.remove('hidden');
+
+      // Cargar Datos del Médico
+      document.getElementById('welcomeDoctorText').innerText = `Bienvenido Dr. ${user.nombre}`;
+      document.getElementById('medicoNombre').value = user.nombre;
+      document.getElementById('medicoEspecialidad').value = user.cargoEsp;
+      document.getElementById('medicoCedula').value = user.cedula;
+    }
+
+    function cerrarSesion() {
+      location.reload();
+    }
+
+    function validarEdadPaciente(val) {
+      const alerta = document.getElementById('alertaEdad');
+      if (val !== "" && parseInt(val) < 5) {
+        alerta.classList.remove('hidden');
+      } else {
+        alerta.classList.add('hidden');
+      }
+    }
+
+    // Modal para Confirmar Firma con Contraseña
+    function abrirModalFirma() {
+      document.getElementById('confirmFirmaPass').value = '';
+      document.getElementById('firmaError').classList.add('hidden');
+      document.getElementById('modalConfirmFirma').classList.remove('hidden');
+    }
+
+    function cerrarFirmaModal() {
+      document.getElementById('modalConfirmFirma').classList.add('hidden');
+    }
+
+    function validarYGenerarQR() {
+      const passEntered = document.getElementById('confirmFirmaPass').value.trim();
+      const errBox = document.getElementById('firmaError');
+
+      if (passEntered !== currentUser.password) {
+        errBox.innerText = "❌ Contraseña incorrecta. No se puede firmar.";
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      cerrarFirmaModal();
+      generarFirmaQR();
+    }
+
+    function generarFirmaQR() {
+      const medico = currentUser.nombre;
+      const especialidad = currentUser.cargoEsp;
+      const cedulaMedico = currentUser.cedula;
+      const fecha = document.getElementById('fechaPrescripcion').value;
 
       const payloadQR = `FIRMADO POR: ${medico} | Especialidad: ${especialidad} | Reg. MSP: ${cedulaMedico} | RAZON: Receta Medica aprobada por LOORMEDIC S.A | LOCALIZACION: GUAYAQUIL, CDLA VERNAZA NORTE MZ7, VILLA 19 | FECHA: ${fecha}`;
 
       const qrContainer = document.getElementById('qrContainer');
       qrContainer.innerHTML = '';
 
-      try {
-        new QRCode(qrContainer, {
-          text: payloadQR,
-          width: 90,
-          height: 90,
-          colorDark : "#0f172a",
-          colorLight : "#ffffff",
-          correctLevel : QRCode.CorrectLevel.M
-        });
+      new QRCode(qrContainer, {
+        text: payloadQR,
+        width: 90,
+        height: 90,
+        colorDark : "#0f172a",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.M
+      });
 
-        document.getElementById('txtMedico').innerText = medico.toUpperCase();
-        document.getElementById('txtEsp').innerText = especialidad.toUpperCase();
-        document.getElementById('txtFecha').innerText = "REG/CED: " + cedulaMedico + " | " + fecha;
-        document.getElementById('firmaTexto').classList.remove('hidden');
+      document.getElementById('txtMedico').innerText = medico.toUpperCase();
+      document.getElementById('txtEsp').innerText = especialidad.toUpperCase();
+      document.getElementById('txtFecha').innerText = "REG/CED: " + cedulaMedico + " | " + fecha;
+      document.getElementById('firmaTexto').classList.remove('hidden');
 
-        statusMsg.innerText = "✅ ¡Firma Digital y Código QR generados con éxito!";
-        statusMsg.className = "text-xs font-medium text-emerald-400";
-        return true;
-      } catch (err) {
-        console.error("Error al generar QR:", err);
-        statusMsg.innerText = "❌ Error al generar el código QR.";
-        statusMsg.className = "text-xs font-medium text-rose-400";
-        return false;
-      }
+      const statusMsg = document.getElementById('statusMsg');
+      statusMsg.innerText = "✅ Firma Digital y Código QR validados e insertados.";
+      statusMsg.className = "text-xs font-medium text-emerald-400";
     }
 
     function obtenerQRBase64() {
@@ -337,10 +661,10 @@
     function imprimirLocal() {
       let qrData = obtenerQRBase64();
       if (!qrData) {
-        const ok = generarFirmaQR();
-        if (!ok) return;
+        alert("Por favor valide su firma digital con contraseña antes de imprimir.");
+        return;
       }
-      setTimeout(() => { window.print(); }, 200);
+      window.print();
     }
 
     function imprimirFormatoEnBlanco() {
@@ -353,11 +677,10 @@
       document.getElementById('pacienteCedula').value = '';
       document.getElementById('pacienteEdad').value = '';
       document.getElementById('cieCodigo').value = '';
+      document.getElementById('pacienteAlergias').value = '';
       document.getElementById('prescripcionRx').value = '';
       document.getElementById('indicacionesRx').value = '';
-      document.getElementById('medicoNombre').value = '';
-      document.getElementById('medicoEspecialidad').value = '';
-      document.getElementById('medicoCedula').value = '';
+      document.getElementById('alertaEdad').classList.add('hidden');
       document.getElementById('qrContainer').innerHTML = '<span class="text-[9px] text-slate-500 text-center no-print">Presione \'Generar Firma\'</span>';
       document.getElementById('firmaTexto').classList.add('hidden');
       document.getElementById('statusMsg').innerText = '';
@@ -368,30 +691,30 @@
 
       let qrDataBase64 = obtenerQRBase64();
       if (!qrDataBase64) {
-        const ok = generarFirmaQR();
-        if (!ok) return;
-        qrDataBase64 = obtenerQRBase64();
+        alert("Debe validar su contraseña y generar el QR antes de guardar.");
+        return;
       }
 
       const statusMsg = document.getElementById('statusMsg');
       const btnGuardar = document.getElementById('btnGuardar');
 
-      statusMsg.innerText = "⏳ Guardando datos y generando PDF en Drive...";
+      statusMsg.innerText = "⏳ Guardando receta en la base de datos de Loormedic...";
       statusMsg.className = "text-xs font-medium text-amber-400";
       btnGuardar.disabled = true;
 
       const payload = {
+        action: "saveReceta",
+        fechaPrescripcion: document.getElementById('fechaPrescripcion').value,
         pacienteNombre: document.getElementById('pacienteNombre').value,
         pacienteCedula: document.getElementById('pacienteCedula').value,
         pacienteEdad: document.getElementById('pacienteEdad').value,
         cieCodigo: document.getElementById('cieCodigo').value,
         tipoDiag: document.getElementById('tipoDiag').value,
+        alergias: document.getElementById('pacienteAlergias').value,
         prescripcion: document.getElementById('prescripcionRx').value,
         indicaciones: document.getElementById('indicacionesRx').value,
-        medicoNombre: document.getElementById('medicoNombre').value,
-        medicoEspecialidad: document.getElementById('medicoEspecialidad').value,
-        medicoCedula: document.getElementById('medicoCedula').value,
-        qrImageData: qrDataBase64
+        medicoNombre: currentUser.nombre,
+        medicoCedula: currentUser.cedula
       };
 
       fetch(GAS_WEBAPP_URL, {
@@ -401,12 +724,12 @@
         body: JSON.stringify(payload)
       })
       .then(() => {
-        statusMsg.innerText = "✅ ¡Receta registrada y PDF guardado en Drive con éxito!";
+        statusMsg.innerText = "✅ ¡Receta médica guardada correctamente!";
         statusMsg.className = "text-xs font-medium text-emerald-400";
         btnGuardar.disabled = false;
       })
       .catch(err => {
-        statusMsg.innerText = "❌ Error al conectar con Google Drive.";
+        statusMsg.innerText = "❌ Error al guardar en el servidor.";
         statusMsg.className = "text-xs font-medium text-rose-400";
         btnGuardar.disabled = false;
       });
@@ -416,7 +739,7 @@
       const modal = document.getElementById('modalHistorial');
       const tabla = document.getElementById('tablaRecetas');
       modal.classList.remove('hidden');
-      tabla.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">Consultando Google Drive...</td></tr>';
+      tabla.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">Consultando registros...</td></tr>';
 
       fetch(GAS_WEBAPP_URL)
         .then(res => res.json())
@@ -427,23 +750,19 @@
           }
           let html = '';
           data.forEach(r => {
-            const fechaFmt = new Date(r.fecha).toLocaleDateString();
             html += `
-              <tr class="hover:bg-slate-700/50">
-                <td class="p-2">${fechaFmt}</td>
+              <tr class="hover:bg-slate-800">
+                <td class="p-2">${r.fecha}</td>
                 <td class="p-2 font-medium text-white">${r.paciente}</td>
                 <td class="p-2">${r.cedula}</td>
                 <td class="p-2">${r.cie}</td>
                 <td class="p-2 text-center">
-                  ${r.pdfUrl ? `<a href="${r.pdfUrl}" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded text-[10px]">👁️ Abrir PDF</a>` : '-'}
+                  ${r.pdfUrl ? `<a href="${r.pdfUrl}" target="_blank" class="bg-blue-600 text-white px-2 py-1 rounded text-[10px]">👁️ Ver PDF</a>` : '-'}
                 </td>
               </tr>
             `;
           });
           tabla.innerHTML = html;
-        })
-        .catch(err => {
-          tabla.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-rose-400">Error al obtener las recetas.</td></tr>';
         });
     }
 
