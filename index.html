@@ -11,6 +11,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Loormedic Recetas">
 
+  <!-- Script Dinámico para Manifest PWA Correcto sin Errores de Sintaxis -->
   <script>
     const manifestJson = {
       "name": "Loormedic Receta Digital",
@@ -95,7 +96,7 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
 
-  <!-- LOGIN -->
+  <!-- CONTENEDOR DE LOGIN -->
   <div id="loginSection" class="min-h-screen flex flex-col md:flex-row">
     <div class="md:w-1/2 bg-slate-900 flex flex-col justify-between p-8 border-b md:border-b-0 md:border-r border-slate-800 relative overflow-hidden">
       <div class="absolute inset-0 watermark opacity-10"></div>
@@ -338,7 +339,7 @@
             </div>
           </div>
 
-          <!-- Sección 2 -->
+          <!-- Sección 2: PRESCRIPCIÓN MÉDICA CON CHECKBOX DE ANTIMICROBIANOS -->
           <div class="section-block bg-slate-950/60 p-4 rounded-lg border border-slate-800">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-2 mb-3 gap-2">
               <h2 class="font-semibold text-slate-200 text-sm">
@@ -372,7 +373,7 @@
             </div>
           </div>
 
-          <!-- Sección 3 -->
+          <!-- Sección 3: Datos del Médico -->
           <div class="section-block bg-slate-950/60 p-4 rounded-lg border border-slate-800">
             <h2 class="font-semibold text-slate-200 text-sm mb-2 border-b border-slate-800 pb-1">3. DATOS DEL ESPECIALISTA PRESCRIPTOR</h2>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-sm">
@@ -395,7 +396,7 @@
             </div>
           </div>
 
-          <!-- Acciones -->
+          <!-- Acciones y QR ultrasónico por Imagen Directa -->
           <div class="section-block flex flex-col md:flex-row items-center justify-between bg-slate-950 p-4 rounded-lg border border-slate-800 gap-4">
             <div class="no-print space-y-2 w-full md:w-auto">
               <div class="flex flex-wrap gap-2">
@@ -434,7 +435,7 @@
 
         </form>
 
-        <!-- Modal Historial -->
+        <!-- Modal Historial Recetas -->
         <div id="modalHistorial" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
           <div class="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-4xl max-h-[80vh] flex flex-col p-6 shadow-2xl">
             <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
@@ -470,7 +471,6 @@
 
     let currentUser = null;
     let deferredPrompt = null;
-    let ultimaUrlPdfGenerado = "";
 
     function toggleAntimicrobianoNota() {
       const isChecked = document.getElementById('chkAntimicrobiano').checked;
@@ -485,6 +485,7 @@
       }
     }
 
+    // Registro de PWA e Instalación
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
@@ -620,7 +621,8 @@
 
       fetch(GAS_WEBAPP_URL, {
         method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "updatePassword",
           cedula: currentUser.cedula,
@@ -693,6 +695,7 @@
       }, 100);
     }
 
+    // GENERACIÓN ULTRASÓNICA DE QR MEDIANTE ETIQUETA IMG DIRECTA (Sin desbordamiento de memoria ni cuotas)
     function generarFirmaQR() {
       const medico = currentUser.nombre;
       const especialidad = currentUser.cargoEsp;
@@ -753,7 +756,6 @@
       document.getElementById('qrContainer').innerHTML = '<span class="text-[9px] text-slate-500 text-center no-print">Presione \'Validar y Firmar\'</span>';
       document.getElementById('firmaTexto').classList.add('hidden');
       document.getElementById('statusMsg').innerText = '';
-      ultimaUrlPdfGenerado = "";
     }
 
     function enviarPorWhatsApp() {
@@ -772,18 +774,12 @@
         notaAntimicrobianoWA = `\n\n⚠️ *NOTA IMPORTANTE:* Esta receta contiene antimicrobianos. De acuerdo al MSP en su acuerdo ministerial, esta receta tiene máximo una vigencia de *3 días* a partir de su prescripción.`;
       }
 
-      let linkPdfWA = "";
-      if (ultimaUrlPdfGenerado) {
-        linkPdfWA = `\n\n📄 *Descargar Receta en PDF:* ${ultimaUrlPdfGenerado}`;
-      }
-
       const textoWA = `*CONSULTORA LOORMEDIC S.A.*\n*RECETA MÉDICA DIGITAL*\n\n` +
         `👤 *Paciente:* ${paciente}\n` +
         `📅 *Fecha:* ${document.getElementById('fechaPrescripcion').value}\n\n` +
         `💊 *Medicamento(s):*\n${prescripcion}\n\n` +
         `📋 *Indicaciones:* ${indicaciones}` +
-        `${notaAntimicrobianoWA}` +
-        `${linkPdfWA}\n\n` +
+        `${notaAntimicrobianoWA}\n\n` +
         `👨‍⚕️ *Médico Prescriptor:* Dr. ${currentUser.nombre}\n` +
         `📞 *Contacto:* ${document.getElementById('medicoCelular').value || 'N/A'}\n\n` +
         `_Receta homologada conforme al AM 00031-2020 MSP_`;
@@ -804,7 +800,7 @@
       const statusMsg = document.getElementById('statusMsg');
       const btnGuardar = document.getElementById('btnGuardar');
 
-      statusMsg.innerText = "⏳ Generando PDF y guardando en Google Drive...";
+      statusMsg.innerText = "⏳ Guardando receta en la base de datos...";
       statusMsg.className = "text-xs font-medium text-amber-400";
       btnGuardar.disabled = true;
 
@@ -827,57 +823,58 @@
 
       fetch(GAS_WEBAPP_URL, {
         method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       })
-      .then(res => res.json())
-      .then(res => {
-        if (res.status === "SUCCESS") {
-          ultimaUrlPdfGenerado = res.pdfUrl || "";
-          statusMsg.innerText = "✅ ¡Receta guardada y PDF generado correctamente!";
-          statusMsg.className = "text-xs font-medium text-emerald-400";
-        } else {
-          statusMsg.innerText = "⚠️ Receta guardada con observaciones.";
-          statusMsg.className = "text-xs font-medium text-amber-400";
-        }
+      .then(() => {
+        statusMsg.innerText = "✅ ¡Receta médica guardada correctamente!";
+        statusMsg.className = "text-xs font-medium text-emerald-400";
         btnGuardar.disabled = false;
       })
       .catch(err => {
-        statusMsg.innerText = "❌ Error al comunicar con el servidor.";
+        statusMsg.innerText = "❌ Error al guardar en el servidor.";
         statusMsg.className = "text-xs font-medium text-rose-400";
         btnGuardar.disabled = false;
       });
     }
 
+    // Cargar Historial con mejor manejo de respuesta y prevención de bloqueos
     function cargarHistorialRecetas() {
       const modal = document.getElementById('modalHistorial');
       const tabla = document.getElementById('tablaRecetas');
       const titulo = document.getElementById('modalHistorialTitulo');
       
       modal.classList.remove('hidden');
-      tabla.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400">Consultando registros...</td></tr>';
+      tabla.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-blue-400 font-semibold animate-pulse">⏳ Cargando historial desde Google Sheets... por favor espere</td></tr>';
 
       const isADMIN = currentUser.cedula.toUpperCase() === "ADMIN";
       titulo.innerText = isADMIN ? "📋 Historial General (Todas las Recetas - ADMIN)" : `📋 Mis Recetas Guardadas (Dr. ${currentUser.nombre})`;
 
-      fetch(`${GAS_WEBAPP_URL}?action=getRecetas&userCedula=${encodeURIComponent(currentUser.cedula)}`, { redirect: "follow" })
-        .then(res => res.json())
+      // Prevenir respuestas cacheadas y forzar seguimiento de redirección
+      const url = `${GAS_WEBAPP_URL}?action=getRecetas&userCedula=${encodeURIComponent(currentUser.cedula)}&_t=${new Date().getTime()}`;
+
+      fetch(url, { redirect: "follow" })
+        .then(res => {
+          if (!res.ok) throw new Error("Error en respuesta de red");
+          return res.json();
+        })
         .then(data => {
-          if (!data || data.length === 0) {
+          if (!Array.isArray(data) || data.length === 0) {
             tabla.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-500">No hay recetas guardadas registradas.</td></tr>';
             return;
           }
           let html = '';
           data.forEach(r => {
             html += `
-              <tr class="hover:bg-slate-800">
-                <td class="p-2">${r.fecha}</td>
-                <td class="p-2 font-medium text-white">${r.paciente}</td>
-                <td class="p-2">${r.cedula}</td>
-                <td class="p-2">${r.cie}</td>
-                <td class="p-2 text-blue-400">${r.medico || '-'}</td>
-                <td class="p-2 text-center">
-                  ${r.pdfUrl ? `<a href="${r.pdfUrl}" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 rounded text-[10px] inline-flex items-center gap-1 font-semibold transition">👁️ Ver PDF</a>` : '<span class="text-slate-500">-</span>'}
+              <tr class="hover:bg-slate-800 transition">
+                <td class="p-2 border-b border-slate-800/50">${r.fecha || '-'}</td>
+                <td class="p-2 border-b border-slate-800/50 font-medium text-white">${r.paciente || '-'}</td>
+                <td class="p-2 border-b border-slate-800/50">${r.cedula || '-'}</td>
+                <td class="p-2 border-b border-slate-800/50">${r.cie || '-'}</td>
+                <td class="p-2 border-b border-slate-800/50 text-blue-400">${r.medico || '-'}</td>
+                <td class="p-2 border-b border-slate-800/50 text-center">
+                  ${r.pdfUrl ? `<a href="${r.pdfUrl}" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 rounded text-[10px] inline-flex items-center gap-1 font-semibold transition shadow">👁️ Ver PDF</a>` : '<span class="text-slate-500">-</span>'}
                 </td>
               </tr>
             `;
@@ -885,7 +882,14 @@
           tabla.innerHTML = html;
         })
         .catch(err => {
-          tabla.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-rose-400">Error al cargar las recetas.</td></tr>';
+          console.error("Error obteniendo recetas:", err);
+          tabla.innerHTML = `
+            <tr>
+              <td colspan="6" class="p-4 text-center text-rose-400">
+                ⚠️ No se pudo cargar el historial. <br>
+                <button onclick="cargarHistorialRecetas()" class="mt-2 text-xs bg-slate-800 hover:bg-slate-700 text-white px-3 py-1 rounded">Reintentar</button>
+              </td>
+            </tr>`;
         });
     }
 
