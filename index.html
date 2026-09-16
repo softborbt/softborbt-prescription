@@ -11,7 +11,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Loormedic Recetas">
 
-  <!-- Web App Manifest en línea para PWA (Corregido) -->
+  <!-- Web App Manifest en línea para PWA -->
   <link rel="manifest" href='data:application/json,{"name":"Loormedic Receta Digital","short_name":"RecetaApp","start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#0f172a","icons":[{"src":"https://raw.githubusercontent.com/softborbt/softborbt-clientes/refs/heads/main/loormedic1x1.png","sizes":"192x192","type":"image/png"}]}'>
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -65,6 +65,11 @@
         color: #0f172a !important;
         padding: 0 !important;
         outline: none !important;
+      }
+      .antimicrobial-print-box {
+        display: block !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
     }
   </style>
@@ -243,7 +248,6 @@
           </div>
           
           <div class="flex items-center gap-2">
-            <!-- Botón PWA / Instalar App -->
             <button id="btnInstallApp" onclick="instalarPWA()" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-semibold px-3 py-1.5 rounded transition items-center gap-1 shadow">
               📲 Instalar Aplicación
             </button>
@@ -318,24 +322,38 @@
             </div>
           </div>
 
-          <!-- Sección 2 -->
+          <!-- Sección 2: PRESCRIPCIÓN MÉDICA CON CHECKBOX DE ANTIMICROBIANOS -->
           <div class="section-block bg-slate-950/60 p-4 rounded-lg border border-slate-800">
-            <h2 class="font-semibold text-slate-200 text-sm mb-2 border-b border-slate-800 pb-1">
-              2. PRESCRIPCIÓN MÉDICA (Rx) E INDICACIONES
-            </h2>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-2 mb-3 gap-2">
+              <h2 class="font-semibold text-slate-200 text-sm">
+                2. PRESCRIPCIÓN MÉDICA (Rx) E INDICACIONES
+              </h2>
+              
+              <!-- Casilla de Verificación de Antimicrobianos -->
+              <label class="inline-flex items-center space-x-2 bg-amber-950/40 border border-amber-700/50 px-2.5 py-1 rounded cursor-pointer text-xs text-amber-300 font-medium hover:bg-amber-900/40 transition">
+                <input type="checkbox" id="chkAntimicrobiano" onchange="toggleAntimicrobianoNota()" class="w-4 h-4 text-amber-600 bg-slate-900 border-amber-700 rounded focus:ring-0">
+                <span>¿Prescribe antimicrobianos?</span>
+              </label>
+            </div>
+
             <div class="space-y-3">
               <div>
                 <label class="block text-xs font-medium text-slate-400 mb-1">
                   Detalle del Medicamento <span class="text-blue-400">(DCI, Forma Farmacéutica, Concentración, Vía, Cantidad)</span>
                 </label>
-                <textarea id="prescripcionRx" rows="3" placeholder="1. Paracetamol (DCI) - Comprimido - 500mg - Vía Oral - Cantidad: 10 (diez)" class="w-full p-2 border border-slate-800 rounded bg-slate-900 text-white font-mono text-xs focus:outline-none focus:border-blue-500" required></textarea>
+                <textarea id="prescripcionRx" rows="3" placeholder="1. Amoxicilina + Ácido Clavulánico - Comprimido - 875/125mg - Vía Oral - Cantidad: 14 (catorce)" class="w-full p-2 border border-slate-800 rounded bg-slate-900 text-white font-mono text-xs focus:outline-none focus:border-blue-500" required></textarea>
               </div>
 
               <div>
                 <label class="block text-xs font-medium text-slate-400 mb-1">
                   Dosis / Posología, Frecuencia y Duración del Tratamiento
                 </label>
-                <textarea id="indicacionesRx" rows="2" placeholder="Tomar 1 comprimido cada 8 horas por 5 días." class="w-full p-2 border border-slate-800 rounded bg-slate-900 text-white text-xs focus:outline-none focus:border-blue-500" required></textarea>
+                <textarea id="indicacionesRx" rows="2" placeholder="Tomar 1 comprimido cada 12 horas por 7 días." class="w-full p-2 border border-slate-800 rounded bg-slate-900 text-white text-xs focus:outline-none focus:border-blue-500" required></textarea>
+              </div>
+
+              <!-- BANNER / NOTA DE VIGENCIA DE ANTIMICROBIANOS DEL MSP (SE MUESTRA AL IMPRIMIR Y EN PANTALLA) -->
+              <div id="notaAntimicrobiano" class="hidden antimicrobial-print-box p-2.5 bg-rose-950/80 border border-rose-800 rounded text-rose-200 text-xs font-semibold text-center leading-tight">
+                ⚠️ Esta receta contiene antimicrobianos, de acuerdo al MSP en su acuerdo ministerial esta receta tiene máximo una vigencia de 3 días a partir de su prescripción.
               </div>
             </div>
           </div>
@@ -357,7 +375,7 @@
                 <input type="text" id="medicoCedula" readonly class="w-full mt-1 p-2 border border-slate-800 rounded bg-slate-900/80 text-slate-300 font-semibold cursor-not-allowed">
               </div>
               <div>
-                <label class="block text-xs font-medium text-slate-400">Teléfono / Celular (Escriba aquí)</label>
+                <label class="block text-xs font-medium text-slate-400">Teléfono / Celular</label>
                 <input type="text" id="medicoCelular" placeholder="Ej: 0999999999" class="w-full mt-1 p-2 border border-slate-800 rounded bg-slate-900 text-white focus:outline-none focus:border-blue-500 font-semibold">
               </div>
             </div>
@@ -439,6 +457,21 @@
 
     let currentUser = null;
     let deferredPrompt = null;
+
+    // Control de la nota de antimicrobianos
+    function toggleAntimicrobianoNota() {
+      const isChecked = document.getElementById('chkAntimicrobiano').checked;
+      const nota = document.getElementById('notaAntimicrobiano');
+      if (isChecked) {
+        nota.classList.remove('hidden');
+      } else {
+        nota.classList.add('hidden');
+      }
+      // Re-generar QR si la firma ya fue validada previamente
+      if (currentUser && document.getElementById('firmaTexto').classList.contains('hidden') === false) {
+        generarFirmaQR();
+      }
+    }
 
     // Registro de PWA e Instalación
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -655,8 +688,9 @@
       const especialidad = currentUser.cargoEsp;
       const cedulaMedico = currentUser.cedula;
       const fecha = document.getElementById('fechaPrescripcion').value;
+      const tieneAntimicrobianos = document.getElementById('chkAntimicrobiano').checked ? "SI" : "NO";
 
-      const payloadQR = `FIRMADO POR: ${medico} | Especialidad: ${especialidad} | Reg. MSP: ${cedulaMedico} | RAZON: Receta Medica aprobada por LOORMEDIC S.A | LOCALIZACION: GUAYAQUIL, CDLA VERNAZA NORTE MZ7, VILLA 19 | FECHA: ${fecha}`;
+      const payloadQR = `FIRMADO POR: ${medico} | Especialidad: ${especialidad} | Reg. MSP: ${cedulaMedico} | ANTIMICROBIANOS: ${tieneAntimicrobianos} | RAZON: Receta Medica aprobada por LOORMEDIC S.A | LOCALIZACION: GUAYAQUIL, CDLA VERNAZA NORTE MZ7, VILLA 19 | FECHA: ${fecha}`;
 
       const qrContainer = document.getElementById('qrContainer');
       qrContainer.innerHTML = '';
@@ -721,6 +755,8 @@
       document.getElementById('pacienteAlergias').value = '';
       document.getElementById('prescripcionRx').value = '';
       document.getElementById('indicacionesRx').value = '';
+      document.getElementById('chkAntimicrobiano').checked = false;
+      document.getElementById('notaAntimicrobiano').classList.add('hidden');
       document.getElementById('alertaEdad').classList.add('hidden');
       document.getElementById('qrContainer').innerHTML = '<span class="text-[9px] text-slate-500 text-center no-print">Presione \'Validar y Firmar\'</span>';
       document.getElementById('firmaTexto').classList.add('hidden');
@@ -731,17 +767,24 @@
       const paciente = document.getElementById('pacienteNombre').value.trim();
       const prescripcion = document.getElementById('prescripcionRx').value.trim();
       const indicaciones = document.getElementById('indicacionesRx').value.trim();
+      const tieneAntimicrobianos = document.getElementById('chkAntimicrobiano').checked;
 
       if (!paciente || !prescripcion) {
         alert("Complete al menos el nombre del paciente y la prescripción antes de enviar por WhatsApp.");
         return;
       }
 
+      let notaAntimicrobianoWA = "";
+      if (tieneAntimicrobianos) {
+        notaAntimicrobianoWA = `\n\n⚠️ *NOTA IMPORTANTE:* Esta receta contiene antimicrobianos. De acuerdo al MSP en su acuerdo ministerial, esta receta tiene máximo una vigencia de *3 días* a partir de su prescripción.`;
+      }
+
       const textoWA = `*CONSULTORA LOORMEDIC S.A.*\n*RECETA MÉDICA DIGITAL*\n\n` +
         `👤 *Paciente:* ${paciente}\n` +
         `📅 *Fecha:* ${document.getElementById('fechaPrescripcion').value}\n\n` +
         `💊 *Medicamento(s):*\n${prescripcion}\n\n` +
-        `📋 *Indicaciones:* ${indicaciones}\n\n` +
+        `📋 *Indicaciones:* ${indicaciones}` +
+        `${notaAntimicrobianoWA}\n\n` +
         `👨‍⚕️ *Médico Prescriptor:* Dr. ${currentUser.nombre}\n` +
         `📞 *Contacto:* ${document.getElementById('medicoCelular').value || 'N/A'}\n\n` +
         `_Receta homologada conforme al AM 00031-2020 MSP_`;
@@ -777,6 +820,7 @@
         alergias: document.getElementById('pacienteAlergias').value,
         prescripcion: document.getElementById('prescripcionRx').value,
         indicaciones: document.getElementById('indicacionesRx').value,
+        antimicrobianos: document.getElementById('chkAntimicrobiano').checked ? "SÍ" : "NO",
         medicoNombre: currentUser.nombre,
         medicoCedula: currentUser.cedula,
         medicoCelular: document.getElementById('medicoCelular').value || ""
