@@ -207,6 +207,36 @@
     </div>
   </div>
 
+  <!-- MODAL BÚSQUEDA CIE-10/CIE-11 -->
+  <div id="modalCieSearch" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 max-w-lg w-full space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">🔍 Búsqueda de Código CIE-10 / CIE-11</h3>
+        <button onclick="cerrarCieModal()" class="text-slate-400 hover:text-white text-lg font-bold">&times;</button>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-slate-400 mb-1">Diagnóstico o Enfermedad a Consultar</label>
+        <div class="flex gap-2">
+          <input type="text" id="cieSearchInput" placeholder="Ej: Diabetes, Cefalea, Hipertensión..." class="w-full p-2 bg-slate-800 border border-slate-700 rounded text-xs text-white focus:outline-none focus:border-blue-500" onkeydown="if(event.key==='Enter'){ejecutarBusquedaCie();}">
+          <button type="button" onclick="ejecutarBusquedaCie()" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded text-xs font-semibold shadow transition flex items-center gap-1">
+            🔍 Buscar
+          </button>
+        </div>
+      </div>
+
+      <div id="cieResultsStatus" class="text-xs font-medium text-slate-400"></div>
+
+      <div class="max-h-60 overflow-y-auto border border-slate-800 rounded bg-slate-950 p-2 space-y-1" id="cieResultsContainer">
+        <p class="text-xs text-slate-500 text-center py-4">Escriba un diagnóstico arriba y presione "Buscar".</p>
+      </div>
+
+      <div class="flex justify-end border-t border-slate-800 pt-3">
+        <button type="button" onclick="cerrarCieModal()" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-xs text-slate-300">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL FIRMA DIGITAL -->
   <div id="modalConfirmFirma" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
     <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 max-w-sm w-full space-y-4 shadow-2xl">
@@ -282,9 +312,14 @@
               📋 Ver Recetas Guardadas
             </button>
           </div>
-          <button type="button" onclick="limpiarFormulario()" class="bg-rose-700 hover:bg-rose-800 text-white text-xs font-semibold px-3 py-2 rounded shadow transition">
-            🧹 Limpiar
-          </button>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="abrirModalCie()" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold px-3 py-2 rounded shadow transition flex items-center gap-1">
+              🔍 Buscar CIE-10/CIE-11
+            </button>
+            <button type="button" onclick="limpiarFormulario()" class="bg-rose-700 hover:bg-rose-800 text-white text-xs font-semibold px-3 py-2 rounded shadow transition">
+              🧹 Limpiar
+            </button>
+          </div>
         </div>
 
         <form id="recetaForm" onsubmit="enviarReceta(event)" class="space-y-4">
@@ -321,6 +356,11 @@
               <div>
                 <label class="block text-xs font-medium text-slate-400">Código CIE-10 / CIE-11</label>
                 <input type="text" id="cieCodigo" placeholder="Ej: E78.2" class="w-full mt-1 p-2 border border-slate-800 rounded bg-slate-900 text-white focus:outline-none focus:border-blue-500" required>
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="block text-xs font-medium text-slate-400">Diagnóstico / Descripción</label>
+                <input type="text" id="pacienteDiagnostico" placeholder="Ej: Hiperlipidemia mixta" class="w-full mt-1 p-2 border border-slate-800 rounded bg-slate-900 text-white focus:outline-none focus:border-blue-500" required>
               </div>
 
               <div>
@@ -664,6 +704,104 @@
       }
     }
 
+    // FUNCIONES DEL MODAL CIE-10/CIE-11
+    function abrirModalCie() {
+      const diagVal = document.getElementById('pacienteDiagnostico').value.trim();
+      const searchInput = document.getElementById('cieSearchInput');
+      
+      if (diagVal) {
+        searchInput.value = diagVal;
+      } else {
+        searchInput.value = '';
+      }
+      
+      document.getElementById('modalCieSearch').classList.remove('hidden');
+      
+      if (diagVal) {
+        ejecutarBusquedaCie();
+      } else {
+        document.getElementById('cieResultsContainer').innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Escriba un diagnóstico arriba y presione "Buscar".</p>';
+        document.getElementById('cieResultsStatus').innerText = '';
+      }
+    }
+
+    function cerrarCieModal() {
+      document.getElementById('modalCieSearch').classList.add('hidden');
+    }
+
+    function ejecutarBusquedaCie() {
+      const query = document.getElementById('cieSearchInput').value.trim();
+      const status = document.getElementById('cieResultsStatus');
+      const container = document.getElementById('cieResultsContainer');
+
+      if (!query) {
+        status.innerText = "⚠️ Ingrese un término de búsqueda.";
+        return;
+      }
+
+      status.innerText = "⏳ Buscando diagnósticos de coincidencia...";
+      status.className = "text-xs font-medium text-amber-400";
+      container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4 animate-pulse">Cargando base de datos médica...</p>';
+
+      const apiUrl = `https://clinicaltables.nlm.nih.gov/api/icd10cm/v3/search?terms=${encodeURIComponent(query)}&sf=code,name&maxList=12`;
+
+      fetch(apiUrl)
+        .then(res => res.json())
+        .then(data => {
+          const count = data[0];
+          const codes = data[1];
+          const details = data[3];
+
+          if (count === 0 || !codes || codes.length === 0) {
+            status.innerText = "❌ No se encontraron códigos CIE para esa búsqueda.";
+            status.className = "text-xs font-medium text-rose-400";
+            container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Intente con palabras clave como "hipertension", "diabetes", "cefalea", "gastritis".</p>';
+            return;
+          }
+
+          status.innerText = `✅ Se encontraron ${count} coincidencias. Seleccione una para autocompletar:`;
+          status.className = "text-xs font-medium text-emerald-400";
+
+          let html = '';
+          for (let i = 0; i < codes.length; i++) {
+            const code = codes[i];
+            const name = details[i] ? details[i][1] : 'Diagnóstico Clínico';
+            
+            html += `
+              <div onclick="seleccionarCodigoCie('${code}', '${escapeQuotes(name)}')" class="p-2 hover:bg-blue-900/40 rounded cursor-pointer border border-slate-800 flex justify-between items-center transition group">
+                <div>
+                  <span class="font-mono font-bold text-blue-400 group-hover:text-blue-300 text-xs">${code}</span>
+                  <p class="text-[11px] text-slate-300 group-hover:text-white leading-tight mt-0.5">${name}</p>
+                </div>
+                <button type="button" class="text-[10px] bg-blue-600/80 hover:bg-blue-500 text-white px-2 py-1 rounded transition ml-2 whitespace-nowrap">
+                  Seleccionar
+                </button>
+              </div>
+            `;
+          }
+          container.innerHTML = html;
+        })
+        .catch(err => {
+          console.error("CIE Search Error:", err);
+          status.innerText = "❌ Error al consultar el servicio de códigos CIE.";
+          status.className = "text-xs font-medium text-rose-400";
+          container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Verifique su conexión a internet.</p>';
+        });
+    }
+
+    function escapeQuotes(str) {
+      return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    function seleccionarCodigoCie(code, name) {
+      document.getElementById('cieCodigo').value = code;
+      const diagInput = document.getElementById('pacienteDiagnostico');
+      if (!diagInput.value.trim()) {
+        diagInput.value = name;
+      }
+      cerrarCieModal();
+    }
+
     function abrirModalFirma() {
       document.getElementById('confirmFirmaPass').value = '';
       document.getElementById('firmaError').classList.add('hidden');
@@ -736,6 +874,7 @@
           pacienteCedula: document.getElementById('pacienteCedula').value,
           pacienteEdad: document.getElementById('pacienteEdad').value,
           cieCodigo: document.getElementById('cieCodigo').value,
+          pacienteDiagnostico: document.getElementById('pacienteDiagnostico').value,
           tipoDiag: document.getElementById('tipoDiag').value,
           alergias: document.getElementById('pacienteAlergias').value,
           prescripcion: document.getElementById('prescripcionRx').value,
@@ -848,7 +987,8 @@
 
         const textoWA = `*CONSULTORA LOORMEDIC S.A.*\n*RECETA MÉDICA DIGITAL*\n\n` +
           `👤 *Paciente:* ${paciente}\n` +
-          `📅 *Fecha:* ${document.getElementById('fechaPrescripcion').value}\n\n` +
+          `📅 *Fecha:* ${document.getElementById('fechaPrescripcion').value}\n` +
+          `🩺 *Diagnóstico:* ${document.getElementById('pacienteDiagnostico').value} (${document.getElementById('cieCodigo').value})\n\n` +
           `💊 *Medicamento(s):*\n${prescripcion}\n\n` +
           `📋 *Indicaciones:* ${indicaciones}` +
           `${notaAntimicrobianoWA}\n\n` +
@@ -881,6 +1021,7 @@
       document.getElementById('pacienteCedula').value = '';
       document.getElementById('pacienteEdad').value = '';
       document.getElementById('cieCodigo').value = '';
+      document.getElementById('pacienteDiagnostico').value = '';
       document.getElementById('pacienteAlergias').value = '';
       document.getElementById('prescripcionRx').value = '';
       document.getElementById('indicacionesRx').value = '';
